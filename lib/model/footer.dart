@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:soul_healer/screen/app_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:soul_healer/providers/app_screen.dart';
 
 class Footer extends StatefulWidget {
   const Footer({super.key});
@@ -11,71 +11,84 @@ class Footer extends StatefulWidget {
 }
 
 class _FooterState extends State<Footer> {
-  Color homeIconColor = const Color.fromARGB(255, 255, 173, 50);
-  Color songsIconColor = Colors.black;
-  Color searchIconColor = Colors.black;
-  Color favouriteIconColor = Colors.black;
-  Color settingsIconColor = Colors.black;
+  String selectedPage = '/home';
 
-  Color homeTextColor = const Color.fromARGB(255, 255, 173, 50);
-  Color songsTextColor = Colors.black;
-  Color searchTextColor = Colors.black;
-  Color favouriteTextColor = Colors.black;
-  Color settingsTextColor = Colors.black;
-
-  double homesize = 35;
-  double songsize = 30;
-  double searchsize = 30;
-  double favsize = 30;
-  double settingsize = 30;
-
-  double hometxtsize = 13;
-  double songtxtsize = 12;
-  double searchtxtsize = 12;
-  double favtxtsize = 12;
-  double settingtxtsize = 12;
-
-  void _resetIconSizesAndColors() {
-    setState(() {
-      homeIconColor = Colors.black;
-      songsIconColor = Colors.black;
-      searchIconColor = Colors.black;
-      favouriteIconColor = Colors.black;
-      settingsIconColor = Colors.black;
-
-      homeTextColor = Colors.black;
-      songsTextColor = Colors.black;
-      searchTextColor = Colors.black;
-      favouriteTextColor = Colors.black;
-      settingsTextColor = Colors.black;
-
-      homesize = 30;
-      songsize = 30;
-      searchsize = 30;
-      favsize = 30;
-      settingsize = 30;
-
-      hometxtsize = 12;
-      songtxtsize = 12;
-      searchtxtsize = 12;
-      favtxtsize = 12;
-      settingtxtsize = 12;
-    });
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    double relativeWidth(double percentage) {
+      return screenWidth * (percentage / 100);
+    }
+
+    double relativeHeight(double percentage) {
+      return screenHeight * (percentage / 100);
+    }
+
+    Color getIconColor(String page) {
+      switch (page) {
+        case '/home':
+          return selectedPage == page ? const Color(0xFFCDDC39) : Colors.black;
+        case '/search':
+          return selectedPage == page ? const Color(0xFFFFFFFF) : Colors.black;
+        case '/favourite':
+          return selectedPage == page ? const Color(0xFFF44336) : Colors.black;
+        case '/settings':
+          return selectedPage == page ? const Color(0xFFB0BEC5) : Colors.black;
+        default:
+          return Colors.black;
+      }
+    }
+
+    Color getTextColor(String page) {
+      switch (page) {
+        case '/home':
+          return selectedPage == page ? const Color(0xFFCDDC39) : Colors.black;
+        case '/search':
+          return selectedPage == page ? const Color(0xFFFFFFFF) : Colors.black;
+        case '/favourite':
+          return selectedPage == page ? const Color(0xFFF44336) : Colors.black;
+        case '/settings':
+          return selectedPage == page ? const Color(0xFFB0BEC5) : Colors.black;
+        default:
+          return Colors.black;
+      }
+    }
+
+    double getIconSize(String page) {
+      return selectedPage == page ? relativeWidth(8) : relativeWidth(7);
+    }
+
+    double getTextSize(String page) {
+      return selectedPage == page ? relativeWidth(3.8) : relativeWidth(3);
+    }
+
+    void onIconPressed(String page) {
+      if (mounted) {
+        setState(() {
+          selectedPage = page;
+        });
+        appState.setPage(page);
+      }
+    }
+
     return Container(
-      height: 80,
+      height: relativeHeight(10),
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Color.fromARGB(132, 75, 137, 170),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(132, 75, 137, 170),
         border: BorderDirectional(
           top: BorderSide(
-            color: Color.fromARGB(233, 0, 0, 0),
-            width: 2.0,
+            color: const Color.fromARGB(233, 0, 0, 0),
+            width: relativeWidth(0.5),
           ),
         ),
       ),
@@ -86,92 +99,42 @@ class _FooterState extends State<Footer> {
             _buildIconColumn(
               icon: Icons.home,
               label: 'Home',
-              iconColor: homeIconColor,
-              textColor: homeTextColor,
-              iconSize: homesize,
-              fontSize: hometxtsize,
-              onPressed: () {
-                _resetIconSizesAndColors();
-                setState(() {
-                  homeIconColor = const Color.fromARGB(255, 255, 173, 50);
-                  homeTextColor = const Color.fromARGB(255, 255, 173, 50);
-                  homesize = 35;
-                  hometxtsize = 13;
-                });
-                appState.setPage('/home');
-              },
-            ),
-            _buildIconColumn(
-              icon: Icons.my_library_music_sharp,
-              label: 'Songs',
-              iconColor: songsIconColor,
-              textColor: songsTextColor,
-              iconSize: songsize,
-              fontSize: songtxtsize,
-              onPressed: () {
-                _resetIconSizesAndColors();
-                setState(() {
-                  songsIconColor = const Color(0xFFCDDC39);
-                  songsTextColor = const Color(0xFFCDDC39);
-                  songsize = 35;
-                  songtxtsize = 13;
-                });
-                appState.setPage('/songs');
-              },
+              page: '/home',
+              iconColor: getIconColor('/home'),
+              textColor: getTextColor('/home'),
+              iconSize: getIconSize('/home'),
+              fontSize: getTextSize('/home'),
+              onPressed: () => onIconPressed('/home'),
             ),
             _buildIconColumn(
               icon: Icons.search_outlined,
               label: 'Search',
-              iconColor: searchIconColor,
-              textColor: searchTextColor,
-              iconSize: searchsize,
-              fontSize: searchtxtsize,
-              onPressed: () {
-                _resetIconSizesAndColors();
-                setState(() {
-                  searchIconColor = const Color(0xFFFFFFFF);
-                  searchTextColor = const Color(0xFFFFFFFF);
-                  searchsize = 35;
-                  searchtxtsize = 13;
-                });
-                appState.setPage('/search');
-              },
+              page: '/search',
+              iconColor: getIconColor('/search'),
+              textColor: getTextColor('/search'),
+              iconSize: getIconSize('/search'),
+              fontSize: getTextSize('/search'),
+              onPressed: () => onIconPressed('/search'),
             ),
             _buildIconColumn(
               icon: Icons.favorite_rounded,
               label: 'Favourite',
-              iconColor: favouriteIconColor,
-              textColor: favouriteTextColor,
-              iconSize: favsize,
-              fontSize: favtxtsize,
-              onPressed: () {
-                _resetIconSizesAndColors();
-                setState(() {
-                  favouriteIconColor = const Color(0xFFF44336);
-                  favouriteTextColor = const Color(0xFFF44336);
-                  favsize = 35;
-                  favtxtsize = 13;
-                });
-                appState.setPage('/favourite');
-              },
+              page: '/favourite',
+              iconColor: getIconColor('/favourite'),
+              textColor: getTextColor('/favourite'),
+              iconSize: getIconSize('/favourite'),
+              fontSize: getTextSize('/favourite'),
+              onPressed: () => onIconPressed('/favourite'),
             ),
             _buildIconColumn(
               icon: Icons.miscellaneous_services_rounded,
               label: 'Settings',
-              iconColor: settingsIconColor,
-              textColor: settingsTextColor,
-              iconSize: settingsize,
-              fontSize: settingtxtsize,
-              onPressed: () {
-                _resetIconSizesAndColors();
-                setState(() {
-                  settingsIconColor = const Color(0xFFB0BEC5);
-                  settingsTextColor = const Color(0xFFB0BEC5);
-                  settingsize = 35;
-                  settingtxtsize = 13;
-                });
-                appState.setPage('/settings');
-              },
+              page: '/settings',
+              iconColor: getIconColor('/settings'),
+              textColor: getTextColor('/settings'),
+              iconSize: getIconSize('/settings'),
+              fontSize: getTextSize('/settings'),
+              onPressed: () => onIconPressed('/settings'),
             ),
           ],
         ),
@@ -182,6 +145,7 @@ class _FooterState extends State<Footer> {
   Widget _buildIconColumn({
     required IconData icon,
     required String label,
+    required String page,
     required Color iconColor,
     required Color textColor,
     required double iconSize,
@@ -202,6 +166,9 @@ class _FooterState extends State<Footer> {
             const SizedBox(height: 4),
             Text(
               label,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              softWrap: false,
               style: GoogleFonts.spaceMono(
                 textStyle: TextStyle(
                   color: textColor,

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:soul_healer/providers/audio_player_provider.dart';
 import 'package:soul_healer/model/footer.dart';
-import 'package:soul_healer/screen/player_screen.dart';
-import 'app_screen.dart';
+import 'package:soul_healer/providers/app_screen.dart';
+import 'package:soul_healer/providers/current_song.dart';
+import 'player_screen.dart';
 import 'home.dart';
-import 'songs.dart';
 import 'search.dart';
 import 'fav.dart';
 import 'setting.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class CommonPage extends StatefulWidget {
   const CommonPage({super.key});
@@ -18,19 +19,16 @@ class CommonPage extends StatefulWidget {
 }
 
 class _CommonPageState extends State<CommonPage> {
-  bool isPlaying = false;
-
-  String currSongImage = 'assets/song_poster.jpeg';
+  late AudioPlayerProvider audioProvider;
 
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
+    final audioProvider = Provider.of<AudioPlayerProvider>(context);
+    final songProvider = Provider.of<CurrentSongProvider>(context);
 
     Widget currwidget;
     switch (appState.currentPage) {
-      case '/songs':
-        currwidget = const SongPage();
-        break;
       case '/search':
         currwidget = const SearchPage();
         break;
@@ -43,6 +41,17 @@ class _CommonPageState extends State<CommonPage> {
       case '/home':
       default:
         currwidget = const HomePage();
+    }
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    double relativeWidth(double percentage) {
+      return screenWidth * (percentage / 100);
+    }
+
+    double relativeHeight(double percentage) {
+      return screenHeight * (percentage / 100);
     }
 
     return Scaffold(
@@ -69,73 +78,76 @@ class _CommonPageState extends State<CommonPage> {
                 Expanded(
                   child: currwidget,
                 ),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PlayerPage(
-                          songImage: currSongImage,
-                        ),
-                      ),
-                    );
-                  },
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          currSongImage,
-                          width: 50,
-                          height: 50,
-                        ),
-                        const SizedBox(
-                          width: 15,
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Gulabi Sadi",
-                              style: GoogleFonts.roboto(
-                                textStyle: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w900,
-                                ),
+                songProvider.currSong != ''
+                    ? InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const PlayerPage(
+                                flag: false,
                               ),
                             ),
-                            Text(
-                              "Sanju Rathod, G-SPXRK - Gulabi Sadi",
-                              style: GoogleFonts.roboto(
-                                textStyle: const TextStyle(
-                                    fontSize: 14,
-                                    color: Color.fromARGB(255, 0, 0, 0),
-                                    fontWeight: FontWeight.w400),
+                          );
+                        },
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: relativeHeight(6),
+                          child: Row(
+                            children: [
+                              Image.network(
+                                songProvider.songImage,
+                                width: relativeWidth(15),
                               ),
-                            ),
-                          ],
+                              SizedBox(
+                                width: relativeHeight(1),
+                              ),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    songProvider.songName,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    style: GoogleFonts.roboto(
+                                      textStyle: TextStyle(
+                                        fontSize: relativeWidth(4),
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    songProvider.artistName,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    style: GoogleFonts.roboto(
+                                      textStyle: TextStyle(
+                                          fontSize: relativeWidth(3),
+                                          color: Color.fromARGB(255, 0, 0, 0),
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const Spacer(),
+                              IconButton(
+                                iconSize: relativeWidth(8),
+                                onPressed: () {
+                                  audioProvider.playPause();
+                                },
+                                icon: audioProvider.isPlaying
+                                    ? const Icon(Icons.pause)
+                                    : const Icon(Icons.play_arrow),
+                                color: Colors.black,
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(
-                          width: 25,
-                        ),
-                        IconButton(
-                          iconSize: 35,
-                          onPressed: () {
-                            setState(() {
-                              isPlaying = !isPlaying;
-                            });
-                          },
-                          icon: isPlaying
-                              ? const Icon(Icons.pause)
-                              : const Icon(Icons.play_arrow),
-                          color: Colors.black,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                      )
+                    : const SizedBox(height: 0),
                 const Footer(),
               ],
             ),

@@ -2,53 +2,93 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:ui';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:provider/provider.dart';
+import 'package:soul_healer/providers/audio_player_provider.dart';
+import 'package:soul_healer/providers/current_song.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart' as youtube;
 
 class PlayerPage extends StatefulWidget {
-  const PlayerPage({super.key, required this.songImage});
-
-  final String songImage;
+  const PlayerPage({super.key, required this.flag});
+  final bool flag;
 
   @override
-  State<PlayerPage> createState() => _PlayerPageState();
+  _PlayerPageState createState() => _PlayerPageState();
 }
 
 class _PlayerPageState extends State<PlayerPage> {
-  final AudioPlayer _audioPlayer = AudioPlayer();
-  Duration _progress = const Duration(minutes: 1);
-  Duration _buffered = const Duration(minutes: 1, seconds: 20);
-  Duration _total = const Duration(minutes: 3, seconds: 40);
+  late AudioPlayerProvider audioProvider;
+  bool isAudioLoading = false;
+  String videoId = '';
+  String songname = '';
+  String songArtist = '';
+  String songImage = '';
 
   @override
   void initState() {
     super.initState();
-    _setupAudioPlayer();
+    audioProvider = Provider.of<AudioPlayerProvider>(context, listen: false);
   }
 
-  void _setupAudioPlayer() async {
-    await _audioPlayer.setUrl('https://example.com/audio.mp3');
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final currentSong = Provider.of<CurrentSongProvider>(context);
+    if (videoId != currentSong.currSong &&
+        currentSong.currSong.isNotEmpty &&
+        widget.flag) {
+      videoId = currentSong.currSong;
+      loadAudio();
+    }
+    songname = currentSong.songName;
+    songArtist = currentSong.artistName;
+    songImage = currentSong.songImage;
+  }
 
-    _audioPlayer.positionStream.listen((position) {
-      setState(() {
-        _progress = position;
-      });
+  void loadAudio() async {
+    setState(() {
+      isAudioLoading = true;
     });
 
-    _audioPlayer.bufferedPositionStream.listen((bufferedPosition) {
-      setState(() {
-        _buffered = bufferedPosition;
-      });
-    });
+    String? audioUrl = await getAudioUrl(videoId);
 
-    _audioPlayer.durationStream.listen((duration) {
-      setState(() {
-        _total = duration ?? Duration.zero;
-      });
+    if (audioUrl != null) {
+      if (audioProvider.isPlaying) {
+        await audioProvider.stop();
+      }
+      await audioProvider.setUrl(audioUrl);
+      audioProvider.playPause();
+    } else {
+      print('Failed to get audio URL from YouTube');
+    }
+    setState(() {
+      isAudioLoading = false;
     });
+  }
+
+  Future<String?> getAudioUrl(String videoId) async {
+    final yt = youtube.YoutubeExplode();
+
+    try {
+      var manifest = await yt.videos.streamsClient.getManifest(videoId);
+      var audioStream = manifest.audioOnly.firstOrNull;
+      if (audioStream != null) {
+        return audioStream.url.toString();
+      } else {
+        print('No audio-only streams found');
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching audio URL: $e');
+      return null;
+    } finally {
+      yt.close();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    audioProvider = Provider.of<AudioPlayerProvider>(context);
+
     return Scaffold(
       body: Stack(
         children: [
@@ -60,10 +100,10 @@ class _PlayerPageState extends State<PlayerPage> {
           ),
           Positioned.fill(
             child: Opacity(
-              opacity: 0.3,
-              child: Image.asset(
-                widget.songImage,
-                fit: BoxFit.fill,
+              opacity: 0.6,
+              child: Image.network(
+                songImage,
+                fit: BoxFit.fitHeight,
               ),
             ),
           ),
@@ -91,15 +131,15 @@ class _PlayerPageState extends State<PlayerPage> {
                           Navigator.of(context).pop();
                         },
                         icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                        color: Colors.black,
+                        color: const Color.fromARGB(255, 255, 255, 255),
                       ),
                       Text(
                         'Currently Playing',
                         style: GoogleFonts.roboto(
                           textStyle: const TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.w400,
-                            color: Color.fromARGB(217, 213, 213, 213),
+                            fontWeight: FontWeight.w900,
+                            color: Color.fromARGB(255, 255, 255, 255),
                           ),
                         ),
                       ),
@@ -107,7 +147,7 @@ class _PlayerPageState extends State<PlayerPage> {
                         iconSize: 35,
                         onPressed: () {},
                         icon: const Icon(Icons.more_horiz),
-                        color: Colors.black,
+                        color: const Color.fromARGB(255, 255, 255, 255),
                       ),
                     ],
                   ),
@@ -127,8 +167,8 @@ class _PlayerPageState extends State<PlayerPage> {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(150.0),
-                      child: Image.asset(
-                        widget.songImage,
+                      child: Image.network(
+                        songImage,
                         width: 300,
                         height: 300,
                         fit: BoxFit.cover,
@@ -139,7 +179,7 @@ class _PlayerPageState extends State<PlayerPage> {
                     height: 20,
                   ),
                   Text(
-                    'Gulabi Sadi',
+                    songname,
                     style: GoogleFonts.roboto(
                       textStyle: const TextStyle(
                         fontSize: 20,
@@ -149,7 +189,7 @@ class _PlayerPageState extends State<PlayerPage> {
                     ),
                   ),
                   Text(
-                    'Sanju Rathod, G-SPXRK',
+                    songArtist,
                     style: GoogleFonts.roboto(
                       textStyle: const TextStyle(
                         fontSize: 16,
@@ -164,11 +204,11 @@ class _PlayerPageState extends State<PlayerPage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: ProgressBar(
-                      progress: _progress,
-                      buffered: _buffered,
-                      total: _total,
+                      progress: audioProvider.progress,
+                      buffered: audioProvider.buffered,
+                      total: audioProvider.total,
                       onSeek: (duration) {
-                        _audioPlayer.seek(duration);
+                        audioProvider.audioPlayer.seek(duration);
                       },
                       thumbColor: const Color.fromARGB(255, 143, 21, 21),
                       baseBarColor: const Color.fromARGB(220, 236, 236, 236),
@@ -193,15 +233,13 @@ class _PlayerPageState extends State<PlayerPage> {
                       IconButton(
                         iconSize: 70,
                         onPressed: () {
-                          if (_audioPlayer.playing) {
-                            _audioPlayer.pause();
-                          } else {
-                            _audioPlayer.play();
-                          }
+                          setState(() {
+                            audioProvider.playPause();
+                          });
                         },
-                        icon: const Icon(
-                          Icons.play_circle_fill_outlined,
-                        ),
+                        icon: audioProvider.isPlaying
+                            ? const Icon(Icons.pause)
+                            : const Icon(Icons.play_circle_fill_outlined),
                         color: const Color.fromARGB(255, 255, 255, 255),
                       ),
                       IconButton(
@@ -251,11 +289,5 @@ class _PlayerPageState extends State<PlayerPage> {
         ],
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _audioPlayer.dispose();
-    super.dispose();
   }
 }
