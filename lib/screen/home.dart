@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:soul_healer/model/artistList.dart';
 import 'package:soul_healer/model/languageList.dart';
 import 'package:soul_healer/model/yearly_hits.dart';
 import 'package:soul_healer/model/topHits.dart';
 import 'package:soul_healer/model/trending_song.dart';
+import 'package:soul_healer/providers/theme_manager.dart';
 import 'package:soul_healer/utilities/constants.dart';
 
 class HomePage extends StatefulWidget {
@@ -100,6 +102,7 @@ class _HomePageState extends State<HomePage> {
         });
       }
     } catch (e) {
+      print(e);
       setState(() {
         isLoading = false;
         error = 'Error loading songs: $e';
@@ -217,22 +220,14 @@ class _HomePageState extends State<HomePage> {
       return screenHeight * (percentage / 100);
     }
 
+    final themeManager = Provider.of<ThemeManager>(context, listen: true);
+
     return Scaffold(
       body: Stack(
         children: [
-          Opacity(
-            opacity: 0.7,
-            child: Container(
-              color: const Color.fromARGB(255, 122, 173, 200),
-            ),
-          ),
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.6,
-              child: Image.asset(
-                "assets/pattern.png",
-                fit: BoxFit.cover,
-              ),
+          Container(
+            decoration: BoxDecoration(
+              color: themeManager.themeData.scaffoldBackgroundColor,
             ),
           ),
           isLoading
@@ -256,6 +251,7 @@ class _HomePageState extends State<HomePage> {
                               style: GoogleFonts.cedarvilleCursive(
                                 textStyle: TextStyle(
                                   fontSize: relativeWidth(4.9),
+                                  color: themeManager.themeData.primaryColor,
                                   fontWeight: FontWeight.w900,
                                 ),
                               ),

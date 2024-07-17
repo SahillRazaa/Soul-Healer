@@ -32,7 +32,7 @@ class _SplashState extends State<Splash> {
       body: Stack(
         children: [
           Container(
-            color: const Color.fromARGB(255, 122, 173, 200),
+            color: Color.fromARGB(255, 138, 39, 39),
           ),
           Positioned.fill(
             child: Opacity(
@@ -57,7 +57,7 @@ class _SplashState extends State<Splash> {
                   style: GoogleFonts.montserrat(
                     fontSize: 32,
                     fontWeight: FontWeight.w700,
-                    color: const Color.fromARGB(255, 0, 0, 0),
+                    color: Color.fromARGB(255, 60, 9, 9),
                   ),
                 ),
                 Text(
@@ -65,7 +65,7 @@ class _SplashState extends State<Splash> {
                   style: GoogleFonts.roboto(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
-                    color: const Color.fromARGB(255, 255, 255, 255),
+                    color: Color.fromARGB(255, 255, 181, 181),
                   ),
                 ),
               ],

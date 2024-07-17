@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:soul_healer/providers/current_song.dart';
+import 'package:soul_healer/providers/fav_song_provider.dart';
 import 'package:soul_healer/providers/recent_played_provider.dart';
+import 'package:soul_healer/providers/theme_manager.dart';
 import 'package:soul_healer/screen/player_screen.dart';
 import 'package:soul_healer/utilities/constants.dart';
 import 'dart:async';
@@ -35,11 +37,14 @@ class _ArtistsongsState extends State<Artistsongs> {
     try {
       final searchVideosUrl = 'https://www.googleapis.com/youtube/v3/search'
           '?part=snippet'
-          '&q=${Uri.encodeComponent(artistName)}'
+          '&q=${Uri.encodeComponent('$artistName official music video')}'
           '&type=video'
           '&maxResults=30'
           '&videoCategoryId=10'
           '&regionCode=IN'
+          '&videoDuration=short'
+          '&order=relevance'
+          '&safeSearch=moderate'
           '&key=$apiKey';
 
       final videosResponse = await http.get(Uri.parse(searchVideosUrl));
@@ -68,12 +73,14 @@ class _ArtistsongsState extends State<Artistsongs> {
   }
 
   List<dynamic> recentPlayed = [];
+  List<dynamic> favPlayed = [];
 
   @override
   void initState() {
     super.initState();
     _fetchSongsFuture = fetchArtistVideos();
     _loadRecentPlayed();
+    _loadFavPlayed();
   }
 
   Future<void> _loadRecentPlayed() async {
@@ -104,218 +111,336 @@ class _ArtistsongsState extends State<Artistsongs> {
     }
   }
 
+  Future<void> _loadFavPlayed() async {
+    try {
+      Directory directory = await getApplicationDocumentsDirectory();
+      File file = File('${directory.path}/fav_played.json');
+      if (await file.exists()) {
+        String favPlayedString = await file.readAsString();
+        setState(() {
+          favPlayed = json.decode(favPlayedString);
+        });
+
+        Provider.of<FavSongProvider>(context, listen: false)
+            .setFavSongs(favPlayed);
+      }
+    } catch (e) {
+      print("Error loading recent played songs: $e");
+    }
+  }
+
+  Future<void> _saveFavPlayed() async {
+    try {
+      Directory directory = await getApplicationDocumentsDirectory();
+      File file = File('${directory.path}/fav_played.json');
+      await file.writeAsString(json.encode(favPlayed));
+    } catch (e) {
+      print("Error saving Fav played songs: $e");
+    }
+  }
+
+  bool _isSongInFavorites(dynamic songData) {
+    return favPlayed.any((song) => song['id'] == songData['id']);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-
-    double relativeWidth(double percentage) {
-      return screenWidth * (percentage / 100);
+    double relativeWidth(double percentage, BuildContext context) {
+      return percentage / 100 * MediaQuery.of(context).size.width;
     }
 
-    double relativeHeight(double percentage) {
-      return screenHeight * (percentage / 100);
+    double relativeHeight(double percentage, BuildContext context) {
+      return percentage / 100 * MediaQuery.of(context).size.height;
     }
+
+    final themeManager = Provider.of<ThemeManager>(context, listen: true);
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 59, 158, 211),
-        leading: IconButton(
-          color: Colors.white,
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        backgroundColor: themeManager.themeData.hintColor,
         title: Text(
-          "Music for Every Mood",
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-          softWrap: false,
-          style: GoogleFonts.cedarvilleCursive(
+          "Playlists",
+          style: GoogleFonts.roboto(
             textStyle: TextStyle(
-              color: Colors.white,
-              fontSize: relativeWidth(5),
-              fontWeight: FontWeight.w900,
+              color: themeManager.themeData.primaryColor,
+              fontSize: relativeWidth(5, context),
+              fontWeight: FontWeight.w500,
             ),
           ),
         ),
-      ),
-      body: Center(
-        child: FutureBuilder<List<dynamic>>(
-          future: _fetchSongsFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else {
-              List<dynamic> songs = snapshot.data ?? [];
-              return Column(
-                children: [
-                  SizedBox(height: relativeHeight(3)),
-                  Text(
-                    widget.artistName,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    softWrap: false,
-                    style: GoogleFonts.roboto(
-                      textStyle: TextStyle(
-                        color: Color.fromARGB(255, 0, 0, 0),
-                        fontSize: relativeWidth(5),
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: relativeHeight(1)),
-                  Container(
-                    width: relativeWidth(35),
-                    height: relativeWidth(35),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: const Color.fromARGB(255, 191, 133, 133),
-                        width: relativeWidth(1.5),
-                      ),
-                    ),
-                    child: ClipOval(
-                      child: Image.network(
-                        widget.artistImage,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: relativeHeight(3)),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: songs.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final song = songs[index];
-                        final videoId = song['id']['videoId'];
-                        final fullTitle = song['snippet']['title'];
-                        final thumbnailUrl = song['snippet']['thumbnails']
-                                    ['maxres'] !=
-                                null
-                            ? song['snippet']['thumbnails']['maxres']['url']
-                            : (song['snippet']['thumbnails']['standard'] != null
-                                ? song['snippet']['thumbnails']['standard']
-                                    ['url']
-                                : (song['snippet']['thumbnails']['high'] != null
-                                    ? song['snippet']['thumbnails']['high']
-                                        ['url']
-                                    : song['snippet']['thumbnails']['medium'] !=
-                                            null
-                                        ? song['snippet']['thumbnails']
-                                            ['medium']['url']
-                                        : song['snippet']['thumbnails']
-                                            ['default']['url']));
-
-                        final parts = fullTitle.split(RegExp(r' - | \| '));
-                        String songName = '';
-                        String artistName = '';
-
-                        if (parts.length >= 2) {
-                          songName = parts[0].trim();
-                          artistName = parts[1].trim();
-                        } else {
-                          songName = fullTitle;
-                          artistName = 'Unknown Artist';
-                        }
-
-                        songName = formatTitle(songName);
-                        artistName = formatTitle(artistName);
-
-                        int newLength = (relativeWidth(55) / 8).floor();
-
-                        if (songName.length > newLength) {
-                          songName = '${songName.substring(0, newLength)}..';
-                        }
-                        if (artistName.length > newLength) {
-                          artistName =
-                              '${artistName.substring(0, newLength)}..';
-                        }
-
-                        final songData = {
-                          'id': videoId,
-                          'title': fullTitle,
-                          'thumbnailUrl': thumbnailUrl,
-                        };
-
-                        return ListTile(
-                          leading: ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
-                            child: Image.network(
-                              thumbnailUrl,
-                              width: relativeWidth(15),
-                              height: relativeWidth(15),
-                            ),
-                          ),
-                          title: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                songName,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                softWrap: false,
-                                style: GoogleFonts.roboto(
-                                  textStyle: TextStyle(
-                                    fontSize: relativeWidth(3.5),
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              Text(
-                                artistName,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                softWrap: false,
-                                style: GoogleFonts.roboto(
-                                  textStyle: TextStyle(
-                                    fontSize: relativeWidth(3),
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.more_horiz_rounded),
-                            onPressed: () {},
-                          ),
-                          onTap: () async {
-                            Provider.of<CurrentSongProvider>(context,
-                                    listen: false)
-                                .setSong(videoId, songName, artistName,
-                                    thumbnailUrl);
-
-                            setState(() {
-                              recentPlayed.add(songData);
-                            });
-
-                            await _saveRecentPlayed();
-                            Provider.of<RecentPlayedProvider>(context,
-                                    listen: false)
-                                .addRecentSong(songData);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const PlayerPage(
-                                  flag: true,
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              );
-            }
-          },
+        centerTitle: true,
+        iconTheme: IconThemeData(
+          color: themeManager.themeData.primaryColor,
         ),
       ),
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: themeManager.themeData.scaffoldBackgroundColor,
+            ),
+          ),
+          Center(
+            child: FutureBuilder<List<dynamic>>(
+              future: _fetchSongsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  List<dynamic> songs = snapshot.data ?? [];
+                  return Column(
+                    children: [
+                      Container(
+                        width: relativeWidth(60, context),
+                        height: relativeHeight(30, context),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Opacity(
+                            opacity: 0.9,
+                            child: Image.network(
+                              widget.artistImage,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: relativeHeight(2, context)),
+                      Center(
+                        child: Text(
+                          widget.artistName,
+                          style: GoogleFonts.raleway(
+                            textStyle: TextStyle(
+                              color: themeManager.themeData.hintColor,
+                              fontSize: relativeWidth(5, context),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: relativeHeight(4, context)),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: songs.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final song = songs[index];
+                            final videoId = song['id']['videoId'];
+                            final fullTitle = song['snippet']['title'];
+                            final thumbnailUrl = song['snippet']['thumbnails']
+                                        ['maxres'] !=
+                                    null
+                                ? song['snippet']['thumbnails']['maxres']['url']
+                                : (song['snippet']['thumbnails']['standard'] !=
+                                        null
+                                    ? song['snippet']['thumbnails']['standard']
+                                        ['url']
+                                    : (song['snippet']['thumbnails']['high'] !=
+                                            null
+                                        ? song['snippet']['thumbnails']['high']
+                                            ['url']
+                                        : song['snippet']['thumbnails']
+                                                    ['medium'] !=
+                                                null
+                                            ? song['snippet']['thumbnails']
+                                                ['medium']['url']
+                                            : song['snippet']['thumbnails']
+                                                ['default']['url']));
+
+                            final parts = fullTitle.split(RegExp(r' - | \| '));
+                            String songName = '';
+
+                            for (String part in parts) {
+                              if (part
+                                  .toLowerCase()
+                                  .contains(widget.artistName.toLowerCase())) {
+                                songName =
+                                    fullTitle.replaceAll(part, '').trim();
+                                break;
+                              }
+                            }
+
+                            if (songName.isEmpty) {
+                              songName = fullTitle;
+                            }
+
+                            int newLength =
+                                (relativeWidth(55, context) / 8).floor();
+
+                            if (songName.length > newLength) {
+                              songName =
+                                  '${songName.substring(0, newLength)}..';
+                            }
+
+                            final songData = {
+                              'id': videoId,
+                              'title': fullTitle,
+                              'thumbnailUrl': thumbnailUrl,
+                            };
+
+                            return ListTile(
+                              leading: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: SizedBox(
+                                  width: relativeWidth(12, context),
+                                  height: relativeWidth(12.0, context),
+                                  child: Image.network(
+                                    thumbnailUrl,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    songName,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    style: GoogleFonts.roboto(
+                                      textStyle: TextStyle(
+                                        color:
+                                            themeManager.themeData.primaryColor,
+                                        fontSize: relativeWidth(3.5, context),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    widget.artistName,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    style: GoogleFonts.roboto(
+                                      textStyle: TextStyle(
+                                        color:
+                                            themeManager.themeData.primaryColor,
+                                        fontSize: relativeWidth(3, context),
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.favorite),
+                                color: themeManager.themeData.hintColor,
+                                onPressed: () {
+                                  if (_isSongInFavorites(songData)) {
+                                    _showAlreadyInFavoritesDialog(context);
+                                  } else {
+                                    _showAddFavConfirmationDialog(
+                                        context, songData);
+                                  }
+                                },
+                              ),
+                              onTap: () async {
+                                Provider.of<CurrentSongProvider>(context,
+                                        listen: false)
+                                    .setSong(videoId, songName,
+                                        widget.artistName, thumbnailUrl);
+
+                                setState(() {
+                                  recentPlayed.add(songData);
+                                });
+
+                                await _saveRecentPlayed();
+                                Provider.of<RecentPlayedProvider>(context,
+                                        listen: false)
+                                    .addRecentSong(songData);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const PlayerPage(
+                                      flag: true,
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showAddFavConfirmationDialog(
+      BuildContext context, dynamic songData) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Add to Favorites'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                    'Are you sure you want to add "${songData['title']}" to your favorite songs?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Yes'),
+              onPressed: () async {
+                setState(() {
+                  favPlayed.add(songData);
+                });
+
+                await _saveFavPlayed();
+                Provider.of<FavSongProvider>(context, listen: false)
+                    .addFavSong(songData);
+
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showAlreadyInFavoritesDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Already in Favorites'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                    'The song is already present in your favorite songs list.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

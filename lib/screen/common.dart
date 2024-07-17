@@ -5,6 +5,7 @@ import 'package:soul_healer/providers/audio_player_provider.dart';
 import 'package:soul_healer/model/footer.dart';
 import 'package:soul_healer/providers/app_screen.dart';
 import 'package:soul_healer/providers/current_song.dart';
+import 'package:soul_healer/providers/theme_manager.dart';
 import 'player_screen.dart';
 import 'home.dart';
 import 'search.dart';
@@ -54,23 +55,18 @@ class _CommonPageState extends State<CommonPage> {
       return screenHeight * (percentage / 100);
     }
 
+    final themeManager = Provider.of<ThemeManager>(context, listen: true);
+
     return Scaffold(
       body: Stack(
         children: [
-          Opacity(
-            opacity: 1,
-            child: Container(
-              color: const Color.fromARGB(255, 91, 244, 255),
+          Container(
+            decoration: BoxDecoration(
+              color: themeManager.themeData.primaryColor,
             ),
           ),
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.4,
-              child: Image.asset(
-                "assets/background.png",
-                fit: BoxFit.cover,
-              ),
-            ),
+          const SizedBox(
+            height: 20,
           ),
           SafeArea(
             child: Column(
@@ -92,12 +88,12 @@ class _CommonPageState extends State<CommonPage> {
                         },
                         child: SizedBox(
                           width: double.infinity,
-                          height: relativeHeight(6),
+                          height: relativeHeight(8),
                           child: Row(
                             children: [
                               Image.network(
                                 songProvider.songImage,
-                                width: relativeWidth(15),
+                                width: relativeWidth(18),
                               ),
                               SizedBox(
                                 width: relativeHeight(1),
@@ -114,6 +110,7 @@ class _CommonPageState extends State<CommonPage> {
                                     style: GoogleFonts.roboto(
                                       textStyle: TextStyle(
                                         fontSize: relativeWidth(4),
+                                        color: themeManager.themeData.hintColor,
                                         fontWeight: FontWeight.w900,
                                       ),
                                     ),
@@ -126,7 +123,8 @@ class _CommonPageState extends State<CommonPage> {
                                     style: GoogleFonts.roboto(
                                       textStyle: TextStyle(
                                           fontSize: relativeWidth(3),
-                                          color: Color.fromARGB(255, 0, 0, 0),
+                                          color:
+                                              themeManager.themeData.hintColor,
                                           fontWeight: FontWeight.w400),
                                     ),
                                   ),
@@ -141,7 +139,7 @@ class _CommonPageState extends State<CommonPage> {
                                 icon: audioProvider.isPlaying
                                     ? const Icon(Icons.pause)
                                     : const Icon(Icons.play_arrow),
-                                color: Colors.black,
+                                color: themeManager.themeData.hintColor,
                               ),
                             ],
                           ),

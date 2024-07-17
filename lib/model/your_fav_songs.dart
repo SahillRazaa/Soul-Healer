@@ -1,38 +1,86 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:soul_healer/providers/current_song.dart';
-import 'package:soul_healer/providers/recent_played_provider.dart';
+import 'package:soul_healer/providers/fav_song_provider.dart';
 import 'package:soul_healer/providers/theme_manager.dart';
 import 'package:soul_healer/screen/player_screen.dart';
 
-class Recentsearchmodel extends StatefulWidget {
-  const Recentsearchmodel({super.key, required this.formatTitle});
-
-  final String Function(String) formatTitle;
+class FavPageModel extends StatefulWidget {
+  const FavPageModel({super.key});
 
   @override
-  _RecentsearchmodelState createState() => _RecentsearchmodelState();
+  _FavPageModelState createState() => _FavPageModelState();
 }
 
-class _RecentsearchmodelState extends State<Recentsearchmodel> {
+String formatTitle(String title) {
+  if (title.isEmpty) {
+    return 'Unknown Title';
+  } else {
+    List<String> words = title.split(' ');
+    if (words.isEmpty) return title;
+    words[0] = words[0][0].toUpperCase() + words[0].substring(1).toLowerCase();
+    for (int i = 1; i < words.length; i++) {
+      words[i] = words[i].toLowerCase();
+    }
+    return words.join(' ');
+  }
+}
+
+class _FavPageModelState extends State<FavPageModel> {
   bool showMore = false;
+  List<dynamic> favPlayed = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavPlayed();
+  }
+
+  Future<void> _loadFavPlayed() async {
+    try {
+      Directory directory = await getApplicationDocumentsDirectory();
+      File file = File('${directory.path}/fav_played.json');
+      if (await file.exists()) {
+        String favPlayedString = await file.readAsString();
+        setState(() {
+          favPlayed = json.decode(favPlayedString);
+        });
+
+        Provider.of<FavSongProvider>(context, listen: false)
+            .setFavSongs(favPlayed);
+      }
+    } catch (e) {
+      print("Error loading favorite played songs: $e");
+    }
+  }
+
+  Future<void> _saveFavPlayed() async {
+    try {
+      Directory directory = await getApplicationDocumentsDirectory();
+      File file = File('${directory.path}/fav_played.json');
+      await file.writeAsString(json.encode(favPlayed));
+    } catch (e) {
+      print("Error saving favorite played songs: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<RecentPlayedProvider>(
-      builder: (context, recentPlayedProvider, child) {
-        return buildRecentSongsSection(
-            context, 'Recent Played', recentPlayedProvider.recentSongs);
+    return Consumer<FavSongProvider>(
+      builder: (context, favPlayedProvider, child) {
+        return buildFavSongsSection(
+            context, 'Your Fav Songs', favPlayedProvider.favSongs);
       },
     );
   }
 
-  Widget buildRecentSongsSection(
-      BuildContext context, String title, List<dynamic> recentSongList) {
-    int itemCount = showMore
-        ? (recentSongList.length < 20 ? recentSongList.length : 20)
-        : (recentSongList.length < 5 ? recentSongList.length : 5);
+  Widget buildFavSongsSection(
+      BuildContext context, String title, List<dynamic> favSongList) {
+    int itemCount = favSongList.length;
 
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
@@ -48,41 +96,38 @@ class _RecentsearchmodelState extends State<Recentsearchmodel> {
     final themeManager = Provider.of<ThemeManager>(context, listen: true);
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: relativeWidth(5)),
-              child: Text(
-                title,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                softWrap: false,
-                style: GoogleFonts.roboto(
-                  textStyle: TextStyle(
-                    fontSize: relativeWidth(5),
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
+        SizedBox(height: relativeHeight(3)),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: relativeWidth(5)),
+          child: Text(
+            title,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            softWrap: false,
+            style: GoogleFonts.roboto(
+              textStyle: TextStyle(
+                fontSize: relativeWidth(5),
+                color: themeManager.themeData.primaryColor,
+                fontWeight: FontWeight.w900,
               ),
             ),
-          ],
+          ),
         ),
         SizedBox(height: relativeHeight(2)),
-        recentSongList.isNotEmpty
+        favSongList.isNotEmpty
             ? SizedBox(
-                height: showMore ? null : relativeHeight(8.0 * itemCount),
+                height: relativeHeight(8.0 * itemCount),
                 child: ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: itemCount,
                   itemBuilder: (context, index) {
-                    final song =
-                        recentSongList[recentSongList.length - 1 - index];
-                    final fullTitle = song['title'];
-                    final thumbnailUrl = song['thumbnailUrl'];
+                    final song = favSongList[favSongList.length - 1 - index];
+                    final fullTitle = song['title'] ?? 'Unknown Title';
+                    final thumbnailUrl = song['thumbnailUrl'] ?? '';
+                    final songId = song['id'] ?? '';
 
                     final parts = fullTitle.split(RegExp(r' - | \| '));
                     String songName = '';
@@ -96,8 +141,8 @@ class _RecentsearchmodelState extends State<Recentsearchmodel> {
                       artistName = 'Unknown Artist';
                     }
 
-                    songName = widget.formatTitle(songName);
-                    artistName = widget.formatTitle(artistName);
+                    songName = formatTitle(songName);
+                    artistName = formatTitle(artistName);
 
                     int newLength = (relativeWidth(55) / 8).floor();
 
@@ -108,8 +153,6 @@ class _RecentsearchmodelState extends State<Recentsearchmodel> {
                       artistName = '${artistName.substring(0, newLength)}..';
                     }
 
-                    final songId = song['id'];
-
                     return ListTile(
                       leading: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
@@ -119,6 +162,9 @@ class _RecentsearchmodelState extends State<Recentsearchmodel> {
                           child: Image.network(
                             thumbnailUrl,
                             fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(Icons.error);
+                            },
                           ),
                         ),
                       ),
@@ -133,7 +179,7 @@ class _RecentsearchmodelState extends State<Recentsearchmodel> {
                             style: GoogleFonts.roboto(
                               textStyle: TextStyle(
                                 fontSize: relativeWidth(3.5),
-                                color: Colors.white,
+                                color: themeManager.themeData.primaryColor,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -146,7 +192,7 @@ class _RecentsearchmodelState extends State<Recentsearchmodel> {
                             style: GoogleFonts.roboto(
                               textStyle: TextStyle(
                                 fontSize: relativeWidth(3),
-                                color: Colors.white,
+                                color: themeManager.themeData.primaryColor,
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
@@ -154,9 +200,11 @@ class _RecentsearchmodelState extends State<Recentsearchmodel> {
                         ],
                       ),
                       trailing: IconButton(
-                        icon: const Icon(Icons.more_horiz_rounded),
-                        color: Colors.white,
-                        onPressed: () {},
+                        icon: const Icon(Icons.delete_forever_rounded),
+                        color: themeManager.themeData.primaryColor,
+                        onPressed: () {
+                          _showDeleteConfirmationDialog(context, song, index);
+                        },
                       ),
                       onTap: () {
                         Provider.of<CurrentSongProvider>(context, listen: false)
@@ -190,38 +238,49 @@ class _RecentsearchmodelState extends State<Recentsearchmodel> {
                   ),
                 ),
               ),
-        recentSongList.length > 5
-            ? GestureDetector(
-                onTap: () {
-                  setState(() {
-                    showMore = !showMore;
-                  });
-                },
-                child: Container(
-                  padding: EdgeInsets.all(relativeWidth(3)),
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(relativeWidth(2)),
-                  ),
-                  child: Text(
-                    showMore ? 'See Less' : 'See More',
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    softWrap: false,
-                    style: GoogleFonts.roboto(
-                      textStyle: TextStyle(
-                        color: Colors.white,
-                        fontSize: relativeWidth(3),
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-              )
-            : const SizedBox(
-                height: 0,
-              ),
+        SizedBox(height: 10),
       ],
+    );
+  }
+
+  Future<void> _showDeleteConfirmationDialog(
+      BuildContext context, dynamic song, int index) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Confirmation'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                    'Are you sure you want to delete "${song['title']}" from your favorite songs?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Yes'),
+              onPressed: () {
+                setState(() {
+                  favPlayed.removeWhere((item) => item['id'] == song['id']);
+                });
+
+                _saveFavPlayed();
+
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

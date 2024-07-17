@@ -5,11 +5,14 @@ import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:soul_healer/providers/audio_player_provider.dart';
 import 'package:soul_healer/providers/current_song.dart';
+import 'package:soul_healer/providers/theme_manager.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart' as youtube;
+import 'package:just_audio/just_audio.dart';
 
 class PlayerPage extends StatefulWidget {
-  const PlayerPage({super.key, required this.flag});
   final bool flag;
+
+  const PlayerPage({Key? key, required this.flag}) : super(key: key);
 
   @override
   _PlayerPageState createState() => _PlayerPageState();
@@ -22,11 +25,23 @@ class _PlayerPageState extends State<PlayerPage> {
   String songname = '';
   String songArtist = '';
   String songImage = '';
+  bool isRepeating = false;
+  bool isRepeatIcon = false;
+  bool showPopup = false;
+  String popupMessage = '';
 
   @override
   void initState() {
     super.initState();
     audioProvider = Provider.of<AudioPlayerProvider>(context, listen: false);
+
+    audioProvider.audioPlayer.playerStateStream.listen((state) {
+      if (mounted) {
+        setState(() {
+          isRepeatIcon = state.processingState == ProcessingState.completed;
+        });
+      }
+    });
   }
 
   @override
@@ -55,14 +70,16 @@ class _PlayerPageState extends State<PlayerPage> {
       if (audioProvider.isPlaying) {
         await audioProvider.stop();
       }
-      await audioProvider.setUrl(audioUrl);
+      await audioProvider.setUrl(audioUrl, songname, songArtist, songImage);
       audioProvider.playPause();
     } else {
       print('Failed to get audio URL from YouTube');
     }
-    setState(() {
-      isAudioLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        isAudioLoading = false;
+      });
+    }
   }
 
   Future<String?> getAudioUrl(String videoId) async {
@@ -85,35 +102,30 @@ class _PlayerPageState extends State<PlayerPage> {
     }
   }
 
+  void showPopupMessage(String message) {
+    setState(() {
+      popupMessage = message;
+      showPopup = true;
+    });
+    Future.delayed(const Duration(seconds: 3), () {
+      setState(() {
+        showPopup = false;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     audioProvider = Provider.of<AudioPlayerProvider>(context);
+    final currentSong = Provider.of<CurrentSongProvider>(context);
+
+    final themeManager = Provider.of<ThemeManager>(context, listen: true);
 
     return Scaffold(
       body: Stack(
         children: [
-          Opacity(
-            opacity: 0.9,
-            child: Container(
-              color: const Color.fromARGB(255, 0, 0, 0),
-            ),
-          ),
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.6,
-              child: Image.network(
-                songImage,
-                fit: BoxFit.fitHeight,
-              ),
-            ),
-          ),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
-              child: Container(
-                color: Colors.black.withOpacity(0),
-              ),
-            ),
+          Container(
+            color: themeManager.themeData.scaffoldBackgroundColor,
           ),
           SafeArea(
             child: Center(
@@ -131,15 +143,15 @@ class _PlayerPageState extends State<PlayerPage> {
                           Navigator.of(context).pop();
                         },
                         icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                        color: const Color.fromARGB(255, 255, 255, 255),
+                        color: themeManager.themeData.primaryColor,
                       ),
                       Text(
                         'Currently Playing',
                         style: GoogleFonts.roboto(
-                          textStyle: const TextStyle(
+                          textStyle: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w900,
-                            color: Color.fromARGB(255, 255, 255, 255),
+                            color: themeManager.themeData.primaryColor,
                           ),
                         ),
                       ),
@@ -147,7 +159,7 @@ class _PlayerPageState extends State<PlayerPage> {
                         iconSize: 35,
                         onPressed: () {},
                         icon: const Icon(Icons.more_horiz),
-                        color: const Color.fromARGB(255, 255, 255, 255),
+                        color: themeManager.themeData.primaryColor,
                       ),
                     ],
                   ),
@@ -161,7 +173,7 @@ class _PlayerPageState extends State<PlayerPage> {
                       shape: BoxShape.rectangle,
                       borderRadius: BorderRadius.circular(150.0),
                       border: Border.all(
-                        color: const Color.fromARGB(255, 143, 21, 21),
+                        color: themeManager.themeData.primaryColor,
                         width: 6,
                       ),
                     ),
@@ -178,23 +190,38 @@ class _PlayerPageState extends State<PlayerPage> {
                   const SizedBox(
                     height: 20,
                   ),
-                  Text(
-                    songname,
-                    style: GoogleFonts.roboto(
-                      textStyle: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                        color: Color.fromARGB(217, 213, 213, 213),
+                  if (showPopup)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15.0, vertical: 5.0),
+                      margin: const EdgeInsets.only(top: 0.0),
+                      color: themeManager.themeData.hintColor,
+                      child: Text(
+                        popupMessage,
+                        style: TextStyle(
+                          color: themeManager.themeData.primaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
+                  else
+                    Text(
+                      songname,
+                      style: GoogleFonts.roboto(
+                        textStyle: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          color: themeManager.themeData.primaryColor,
+                        ),
                       ),
                     ),
-                  ),
                   Text(
                     songArtist,
                     style: GoogleFonts.roboto(
-                      textStyle: const TextStyle(
+                      textStyle: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
-                        color: Color.fromARGB(241, 160, 160, 160),
+                        color: themeManager.themeData.primaryColor,
                       ),
                     ),
                   ),
@@ -210,15 +237,15 @@ class _PlayerPageState extends State<PlayerPage> {
                       onSeek: (duration) {
                         audioProvider.audioPlayer.seek(duration);
                       },
-                      thumbColor: const Color.fromARGB(255, 143, 21, 21),
-                      baseBarColor: const Color.fromARGB(220, 236, 236, 236),
-                      thumbGlowColor: const Color.fromARGB(255, 165, 91, 91),
-                      bufferedBarColor: const Color.fromARGB(255, 165, 91, 91),
-                      progressBarColor: const Color.fromARGB(255, 143, 21, 21),
+                      thumbColor: themeManager.themeData.hintColor,
+                      baseBarColor:
+                          Color.fromARGB(235, 211, 211, 211).withOpacity(0.3),
+                      thumbGlowColor: themeManager.themeData.primaryColor,
+                      bufferedBarColor: themeManager.themeData.primaryColor,
+                      progressBarColor: themeManager.themeData.hintColor,
                       timeLabelLocation: TimeLabelLocation.below,
-                      timeLabelTextStyle: const TextStyle(
-                        color: Colors.white,
-                      ),
+                      timeLabelTextStyle:
+                          TextStyle(color: themeManager.themeData.primaryColor),
                     ),
                   ),
                   Row(
@@ -226,27 +253,49 @@ class _PlayerPageState extends State<PlayerPage> {
                     children: [
                       IconButton(
                         iconSize: 50,
-                        onPressed: () {},
-                        icon: const Icon(Icons.skip_previous),
-                        color: const Color.fromARGB(255, 255, 255, 255),
-                      ),
-                      IconButton(
-                        iconSize: 70,
                         onPressed: () {
-                          setState(() {
-                            audioProvider.playPause();
-                          });
+                          if (!currentSong.hasPreviousSong()) {
+                            showPopupMessage('No previous song available');
+                          } else {
+                            currentSong.previousSong();
+                          }
                         },
-                        icon: audioProvider.isPlaying
-                            ? const Icon(Icons.pause)
-                            : const Icon(Icons.play_circle_fill_outlined),
-                        color: const Color.fromARGB(255, 255, 255, 255),
+                        icon: const Icon(Icons.skip_previous),
+                        color: currentSong.hasPreviousSong()
+                            ? themeManager.themeData.primaryColor
+                            : Color.fromARGB(98, 255, 191, 191),
+                      ),
+                      StreamBuilder<PlayerState>(
+                        stream: audioProvider.audioPlayer.playerStateStream,
+                        builder: (context, snapshot) {
+                          bool isPlaying = snapshot.data?.playing ?? false;
+                          return IconButton(
+                            iconSize: 70,
+                            onPressed: () {
+                              setState(() {
+                                audioProvider.playPause();
+                              });
+                            },
+                            icon: isPlaying
+                                ? const Icon(Icons.pause)
+                                : const Icon(Icons.play_circle_fill_outlined),
+                            color: themeManager.themeData.primaryColor,
+                          );
+                        },
                       ),
                       IconButton(
                         iconSize: 50,
-                        onPressed: () {},
+                        onPressed: () {
+                          if (!currentSong.hasNextSong()) {
+                            showPopupMessage('No next song available');
+                          } else {
+                            currentSong.nextSong();
+                          }
+                        },
                         icon: const Icon(Icons.skip_next),
-                        color: const Color.fromARGB(255, 255, 255, 255),
+                        color: currentSong.hasNextSong()
+                            ? themeManager.themeData.primaryColor
+                            : Color.fromARGB(98, 255, 191, 191),
                       ),
                     ],
                   ),
@@ -260,25 +309,24 @@ class _PlayerPageState extends State<PlayerPage> {
                         iconSize: 30,
                         onPressed: () {},
                         icon: const Icon(Icons.speaker),
-                        color: const Color.fromARGB(255, 255, 255, 255),
+                        color: themeManager.themeData.primaryColor,
                       ),
                       IconButton(
                         iconSize: 30,
-                        onPressed: () {},
-                        icon: const Icon(Icons.lyrics),
-                        color: const Color.fromARGB(255, 255, 255, 255),
-                      ),
-                      IconButton(
-                        iconSize: 30,
-                        onPressed: () {},
-                        icon: const Icon(Icons.repeat),
-                        color: const Color.fromARGB(255, 255, 255, 255),
-                      ),
-                      IconButton(
-                        iconSize: 30,
-                        onPressed: () {},
-                        icon: const Icon(Icons.shuffle),
-                        color: const Color.fromARGB(255, 255, 255, 255),
+                        onPressed: () {
+                          setState(() {
+                            isRepeating = !isRepeating;
+                            audioProvider.audioPlayer.setLoopMode(
+                              isRepeating ? LoopMode.one : LoopMode.off,
+                            );
+                          });
+                        },
+                        icon: Icon(
+                          isRepeating ? Icons.repeat_on_rounded : Icons.repeat,
+                          color: isRepeating
+                              ? themeManager.themeData.hintColor
+                              : themeManager.themeData.primaryColor,
+                        ),
                       ),
                     ],
                   ),

@@ -13,36 +13,37 @@ import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
-class Languagesongs extends StatefulWidget {
-  const Languagesongs({
+class Genresongs extends StatefulWidget {
+  const Genresongs({
     Key? key,
-    required this.languageName,
-    required this.languageImage,
+    required this.genreName,
+    required this.gradientColors,
   }) : super(key: key);
 
-  final String languageName;
-  final String languageImage;
+  final String genreName;
+  final List<Color> gradientColors;
 
   @override
-  State<Languagesongs> createState() => _LanguagesongsState();
+  State<Genresongs> createState() => _GenresongsState();
 }
 
-class _LanguagesongsState extends State<Languagesongs> {
+class _GenresongsState extends State<Genresongs> {
   late Future<List<dynamic>> _fetchSongsFuture;
 
-  Future<List<dynamic>> fetchLanguageVideos() async {
+  Future<List<dynamic>> fetchGenreVideos() async {
     const apiKey = Constants.YoutubeKey;
-    String languageName = widget.languageName;
+    String genreName = widget.genreName;
 
     try {
       final searchVideosUrl = 'https://www.googleapis.com/youtube/v3/search'
           '?part=snippet'
-          '&q=${Uri.encodeComponent('$languageName official music video')}'
+          '&q=${Uri.encodeComponent('$genreName songs')}'
           '&type=video'
           '&maxResults=30'
           '&videoCategoryId=10'
           '&regionCode=IN'
           '&videoDuration=short'
+          '&relavanceLanguage=hi'
           '&order=relevance'
           '&safeSearch=moderate'
           '&key=$apiKey';
@@ -78,7 +79,7 @@ class _LanguagesongsState extends State<Languagesongs> {
   @override
   void initState() {
     super.initState();
-    _fetchSongsFuture = fetchLanguageVideos();
+    _fetchSongsFuture = fetchGenreVideos();
     _loadRecentPlayed();
     _loadFavPlayed();
   }
@@ -195,33 +196,8 @@ class _LanguagesongsState extends State<Languagesongs> {
                   List<dynamic> songs = snapshot.data ?? [];
                   return Column(
                     children: [
-                      Container(
-                        width: relativeWidth(60),
-                        height: relativeHeight(30),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Opacity(
-                            opacity: 0.9,
-                            child: Image.network(
-                              widget.languageImage,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: relativeHeight(2)),
-                      Center(
-                        child: Text(
-                          widget.languageName,
-                          style: GoogleFonts.raleway(
-                            textStyle: TextStyle(
-                              color: themeManager.themeData.hintColor,
-                              fontSize: relativeWidth(5),
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ),
+                      buildGradientCircle(
+                          widget.genreName, widget.gradientColors, context),
                       SizedBox(height: relativeHeight(4)),
                       Expanded(
                         child: ListView.builder(
@@ -254,8 +230,9 @@ class _LanguagesongsState extends State<Languagesongs> {
                             String songName = '';
 
                             for (String part in parts) {
-                              if (part.toLowerCase().contains(
-                                  widget.languageName.toLowerCase())) {
+                              if (part
+                                  .toLowerCase()
+                                  .contains(widget.genreName.toLowerCase())) {
                                 songName =
                                     fullTitle.replaceAll(part, '').trim();
                                 break;
@@ -309,7 +286,7 @@ class _LanguagesongsState extends State<Languagesongs> {
                                     ),
                                   ),
                                   Text(
-                                    widget.languageName,
+                                    widget.genreName,
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
                                     softWrap: false,
@@ -340,7 +317,7 @@ class _LanguagesongsState extends State<Languagesongs> {
                                 Provider.of<CurrentSongProvider>(context,
                                         listen: false)
                                     .setSong(videoId, songName,
-                                        widget.languageName, thumbnailUrl);
+                                        widget.genreName, thumbnailUrl);
 
                                 setState(() {
                                   recentPlayed.add(songData);
@@ -444,4 +421,45 @@ class _LanguagesongsState extends State<Languagesongs> {
       },
     );
   }
+}
+
+Widget buildGradientCircle(
+    String genreName, List<Color> gradientColors, BuildContext context) {
+  final screenWidth = MediaQuery.of(context).size.width;
+  final screenHeight = MediaQuery.of(context).size.height;
+
+  double relativeWidth(double percentage) {
+    return screenWidth * (percentage / 100);
+  }
+
+  double relativeHeight(double percentage) {
+    return screenHeight * (percentage / 100);
+  }
+
+  return Column(
+    children: [
+      Container(
+        width: relativeWidth(60),
+        height: relativeHeight(30),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: gradientColors,
+          ),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Center(
+          child: Text(
+            genreName,
+            style: GoogleFonts.roboto(
+              textStyle: TextStyle(
+                color: Color.fromARGB(255, 255, 181, 181),
+                fontSize: relativeWidth(6),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
 }

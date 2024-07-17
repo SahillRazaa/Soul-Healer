@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:soul_healer/providers/app_screen.dart';
+import 'package:soul_healer/providers/theme_manager.dart';
 
 class Footer extends StatefulWidget {
   const Footer({super.key});
@@ -20,6 +21,8 @@ class _FooterState extends State<Footer> {
 
   @override
   Widget build(BuildContext context) {
+    final themeManager = Provider.of<ThemeManager>(context, listen: true);
+
     final appState = Provider.of<AppState>(context);
 
     final screenWidth = MediaQuery.of(context).size.width;
@@ -36,13 +39,21 @@ class _FooterState extends State<Footer> {
     Color getIconColor(String page) {
       switch (page) {
         case '/home':
-          return selectedPage == page ? const Color(0xFFCDDC39) : Colors.black;
+          return selectedPage == page
+              ? const Color(0xFF4CAF50)
+              : themeManager.themeData.primaryColor;
         case '/search':
-          return selectedPage == page ? const Color(0xFFFFFFFF) : Colors.black;
+          return selectedPage == page
+              ? const Color(0xFFFFA726)
+              : themeManager.themeData.primaryColor;
         case '/favourite':
-          return selectedPage == page ? const Color(0xFFF44336) : Colors.black;
+          return selectedPage == page
+              ? const Color(0xFFE91E63)
+              : themeManager.themeData.primaryColor;
         case '/settings':
-          return selectedPage == page ? const Color(0xFFB0BEC5) : Colors.black;
+          return selectedPage == page
+              ? const Color(0xFF607D8B)
+              : themeManager.themeData.primaryColor;
         default:
           return Colors.black;
       }
@@ -51,13 +62,21 @@ class _FooterState extends State<Footer> {
     Color getTextColor(String page) {
       switch (page) {
         case '/home':
-          return selectedPage == page ? const Color(0xFFCDDC39) : Colors.black;
+          return selectedPage == page
+              ? const Color(0xFF4CAF50)
+              : themeManager.themeData.primaryColor;
         case '/search':
-          return selectedPage == page ? const Color(0xFFFFFFFF) : Colors.black;
+          return selectedPage == page
+              ? const Color(0xFFFFA726)
+              : themeManager.themeData.primaryColor;
         case '/favourite':
-          return selectedPage == page ? const Color(0xFFF44336) : Colors.black;
+          return selectedPage == page
+              ? const Color(0xFFE91E63)
+              : themeManager.themeData.primaryColor;
         case '/settings':
-          return selectedPage == page ? const Color(0xFFB0BEC5) : Colors.black;
+          return selectedPage == page
+              ? const Color(0xFF607D8B)
+              : themeManager.themeData.primaryColor;
         default:
           return Colors.black;
       }
@@ -68,7 +87,7 @@ class _FooterState extends State<Footer> {
     }
 
     double getTextSize(String page) {
-      return selectedPage == page ? relativeWidth(3.8) : relativeWidth(3);
+      return selectedPage == page ? relativeWidth(3.3) : relativeWidth(3);
     }
 
     void onIconPressed(String page) {
@@ -84,13 +103,7 @@ class _FooterState extends State<Footer> {
       height: relativeHeight(10),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color.fromARGB(132, 75, 137, 170),
-        border: BorderDirectional(
-          top: BorderSide(
-            color: const Color.fromARGB(233, 0, 0, 0),
-            width: relativeWidth(0.5),
-          ),
-        ),
+        color: themeManager.themeData.hintColor,
       ),
       child: Center(
         child: Row(

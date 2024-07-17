@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:soul_healer/providers/current_song.dart';
 import 'package:soul_healer/providers/recent_played_provider.dart';
+import 'package:soul_healer/providers/theme_manager.dart';
 import 'package:soul_healer/screen/player_screen.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'dart:io';
@@ -25,7 +26,6 @@ class Tophits extends StatefulWidget {
 
 class _TophitsState extends State<Tophits> {
   final PageController _pageController = PageController();
-
   List<dynamic> recentPlayed = [];
 
   @override
@@ -75,6 +75,8 @@ class _TophitsState extends State<Tophits> {
       return screenHeight * (percentage / 100);
     }
 
+    final themeManager = Provider.of<ThemeManager>(context, listen: true);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -87,6 +89,7 @@ class _TophitsState extends State<Tophits> {
                 style: GoogleFonts.roboto(
                   textStyle: TextStyle(
                     fontSize: relativeWidth(5),
+                    color: themeManager.themeData.hintColor,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -97,13 +100,28 @@ class _TophitsState extends State<Tophits> {
         SizedBox(
           height: relativeHeight(38),
           child: widget.topHitsSongs.isEmpty
-              ? const Center(child: Text("No albums available"))
+              ? Center(
+                  child: Text(
+                    "No recent played songs available",
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    softWrap: false,
+                    style: GoogleFonts.roboto(
+                      textStyle: TextStyle(
+                        fontSize: relativeWidth(4),
+                        color: themeManager.themeData.primaryColor,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                )
               : PageView.builder(
                   controller: _pageController,
                   itemCount: widget.topHitsSongs.length,
                   itemBuilder: (context, index) {
                     final song = widget.topHitsSongs[index];
                     final fullTitle = song['snippet']['title'];
+                    final videoId = song['id']['videoId'];
                     final thumbnailUrl = song['snippet']['thumbnails']
                                 ['maxres'] !=
                             null
@@ -143,6 +161,12 @@ class _TophitsState extends State<Tophits> {
                       artistName = '${artistName.substring(0, newLength)}..';
                     }
 
+                    final songData = {
+                      'id': videoId,
+                      'title': fullTitle,
+                      'thumbnailUrl': thumbnailUrl,
+                    };
+
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
@@ -151,15 +175,16 @@ class _TophitsState extends State<Tophits> {
                             onTap: () async {
                               Provider.of<CurrentSongProvider>(context,
                                       listen: false)
-                                  .setSong(song['id']['videoId'], songName,
-                                      artistName, thumbnailUrl);
+                                  .setSong(videoId, songName, artistName,
+                                      thumbnailUrl);
                               setState(() {
-                                recentPlayed.add(song);
+                                recentPlayed.add(songData);
                               });
+
                               await _saveRecentPlayed();
                               Provider.of<RecentPlayedProvider>(context,
                                       listen: false)
-                                  .addRecentSong(song);
+                                  .addRecentSong(songData);
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -192,8 +217,8 @@ class _TophitsState extends State<Tophits> {
             effect: ExpandingDotsEffect(
               dotHeight: relativeHeight(1),
               dotWidth: relativeWidth(2),
-              activeDotColor: Colors.blue,
-              dotColor: Colors.grey,
+              activeDotColor: themeManager.themeData.hintColor,
+              dotColor: themeManager.themeData.primaryColor,
             ),
           ),
       ],

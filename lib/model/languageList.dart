@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:soul_healer/model/languageSongs.dart';
+import 'package:soul_healer/providers/theme_manager.dart';
 import 'package:soul_healer/utilities/topLanguageSongList.dart';
 
 class Languagelist extends StatefulWidget {
@@ -25,6 +27,8 @@ class _LanguagelistState extends State<Languagelist> {
       return screenWidth * (percentage / 100);
     }
 
+    final themeManager = Provider.of<ThemeManager>(context, listen: true);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -38,6 +42,7 @@ class _LanguagelistState extends State<Languagelist> {
             style: GoogleFonts.roboto(
               textStyle: TextStyle(
                 fontSize: relativeWidth(5),
+                color: themeManager.themeData.hintColor,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -74,6 +79,8 @@ Widget buildLanguageRow(Languagesong languageInfo, BuildContext context) {
     return screenHeight * (percentage / 100);
   }
 
+  final themeManager = Provider.of<ThemeManager>(context, listen: true);
+
   return Padding(
     padding: EdgeInsets.all(relativeWidth(3)),
     child: Column(
@@ -104,6 +111,7 @@ Widget buildLanguageRow(Languagesong languageInfo, BuildContext context) {
           style: GoogleFonts.roboto(
             textStyle: TextStyle(
               fontSize: relativeWidth(4),
+              color: themeManager.themeData.primaryColor,
               fontWeight: FontWeight.w600,
             ),
           ),

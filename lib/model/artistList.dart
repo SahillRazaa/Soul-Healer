@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:soul_healer/model/artistSongs.dart';
+import 'package:soul_healer/providers/theme_manager.dart';
 import 'package:soul_healer/utilities/artistsNameList.dart';
 
 class Artistlist extends StatefulWidget {
@@ -30,6 +32,8 @@ class _ArtistlistState extends State<Artistlist> {
       return screenHeight * (percentage / 100);
     }
 
+    final themeManager = Provider.of<ThemeManager>(context, listen: true);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -46,6 +50,7 @@ class _ArtistlistState extends State<Artistlist> {
             style: GoogleFonts.roboto(
               textStyle: TextStyle(
                 fontSize: relativeWidth(5),
+                color: themeManager.themeData.hintColor,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -82,6 +87,8 @@ Widget buildArtistRow(ArtistInfo artistInfo, BuildContext context) {
     return screenHeight * (percentage / 100);
   }
 
+  final themeManager = Provider.of<ThemeManager>(context, listen: true);
+
   return Padding(
     padding: EdgeInsets.all(relativeWidth(3)),
     child: Column(
@@ -112,6 +119,7 @@ Widget buildArtistRow(ArtistInfo artistInfo, BuildContext context) {
           style: GoogleFonts.roboto(
             textStyle: TextStyle(
               fontSize: relativeWidth(4),
+              color: themeManager.themeData.primaryColor,
               fontWeight: FontWeight.w600,
             ),
           ),

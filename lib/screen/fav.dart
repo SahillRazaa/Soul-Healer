@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:soul_healer/model/your_fav_songs.dart';
+import 'package:soul_healer/providers/theme_manager.dart';
 
 class FavPage extends StatefulWidget {
   const FavPage({super.key});
@@ -11,34 +13,17 @@ class FavPage extends StatefulWidget {
 class _FavPageState extends State<FavPage> {
   @override
   Widget build(BuildContext context) {
+    final themeManager = Provider.of<ThemeManager>(context, listen: true);
+
     return Scaffold(
       body: Stack(
         children: [
-          Opacity(
-            opacity: 0.7,
-            child: Container(
-              color: const Color.fromARGB(255, 122, 173, 200),
+          Container(
+            decoration: BoxDecoration(
+              color: themeManager.themeData.scaffoldBackgroundColor,
             ),
           ),
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.6,
-              child: Image.asset(
-                "assets/pattern.png",
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Text(
-            '"Fav Page"',
-            textAlign: TextAlign.center,
-            style: GoogleFonts.roboto(
-              textStyle: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-          ),
+          FavPageModel(),
         ],
       ),
     );
