@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
@@ -54,7 +55,7 @@ class _HomePageState extends State<HomePage> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
-          trendingSongs = data['items'];
+          trendingSongs = data['items']..shuffle();
           isLoading = false;
         });
       } else {
@@ -92,7 +93,7 @@ class _HomePageState extends State<HomePage> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
-          tensTwentiesSongs = data['items'];
+          tensTwentiesSongs = data['items']..shuffle();
           isLoading = false;
         });
       } else {
@@ -131,7 +132,7 @@ class _HomePageState extends State<HomePage> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
-          zerostensSongs = data['items'];
+          zerostensSongs = data['items']..shuffle();
           isLoading = false;
         });
       } else {
@@ -155,7 +156,7 @@ class _HomePageState extends State<HomePage> {
 
     final queryParameters = {
       'part': 'snippet',
-      'maxResults': '10',
+      'maxResults': '30',
       'regionCode': 'IN',
       'order': 'viewCount',
       'q': 'song',
@@ -175,7 +176,8 @@ class _HomePageState extends State<HomePage> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
-          topHits = data['items'];
+          topHits = data['items']..shuffle();
+          topHits = topHits.sublist(0, min(10, topHits.length));
           isLoading = false;
         });
       } else {

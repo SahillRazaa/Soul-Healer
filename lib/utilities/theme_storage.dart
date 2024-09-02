@@ -45,10 +45,6 @@ class ThemeStorage {
       return {'theme': 'lavenderOrangeTheme'};
     } else if (theme == cyanMagentaTheme) {
       return {'theme': 'cyanMagentaTheme'};
-    } else if (theme == peachTurquoiseTheme) {
-      return {'theme': 'peachTurquoiseTheme'};
-    } else if (theme == limeBlueTheme) {
-      return {'theme': 'limeBlueTheme'};
     } else if (theme == mintCoralTheme) {
       return {'theme': 'mintCoralTheme'};
     } else if (theme == indigoCyanTheme) {
@@ -68,10 +64,7 @@ class ThemeStorage {
         return lavenderOrangeTheme;
       case 'cyanMagentaTheme':
         return cyanMagentaTheme;
-      case 'peachTurquoiseTheme':
-        return peachTurquoiseTheme;
-      case 'limeBlueTheme':
-        return limeBlueTheme;
+
       case 'mintCoralTheme':
         return mintCoralTheme;
       case 'indigoCyanTheme':

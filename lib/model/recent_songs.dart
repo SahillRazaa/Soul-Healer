@@ -142,7 +142,7 @@ class _RecentSongState extends State<RecentSong> {
                     songName = widget.formatTitle(songName);
                     artistName = widget.formatTitle(artistName);
 
-                    int newLength = (relativeWidth(55) / 8).floor();
+                    int newLength = (relativeWidth(25) / 8).floor();
 
                     if (songName.length > newLength) {
                       songName = '${songName.substring(0, newLength)}..';

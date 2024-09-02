@@ -52,7 +52,7 @@ class _GenresongsState extends State<Genresongs> {
 
       if (videosResponse.statusCode == 200) {
         final videosData = json.decode(videosResponse.body);
-        List<dynamic> videos = videosData['items'];
+        List<dynamic> videos = videosData['items']..shuffle();
 
         return videos;
       } else {
@@ -243,7 +243,7 @@ class _GenresongsState extends State<Genresongs> {
                               songName = fullTitle;
                             }
 
-                            int newLength = (relativeWidth(55) / 8).floor();
+                            int newLength = (relativeWidth(25) / 8).floor();
 
                             if (songName.length > newLength) {
                               songName =

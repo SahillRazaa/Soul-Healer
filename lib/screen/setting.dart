@@ -22,6 +22,17 @@ class _SettingPageState extends State<SettingPage> {
   Widget build(BuildContext context) {
     final themeManager = Provider.of<ThemeManager>(context, listen: true);
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    double relativeWidth(double percentage) {
+      return screenWidth * (percentage / 100);
+    }
+
+    double relativeHeight(double percentage) {
+      return screenHeight * (percentage / 100);
+    }
+
     return Scaffold(
       body: Stack(
         children: [
@@ -35,26 +46,26 @@ class _SettingPageState extends State<SettingPage> {
               child: Column(
                 children: [
                   SizedBox(
-                    height: 10,
+                    height: relativeHeight(2),
                   ),
                   Image.asset(
                     "assets/logo.png",
-                    width: 180,
-                    height: 180,
+                    width: relativeWidth(60),
+                    height: relativeHeight(30),
                   ),
-                  SizedBox(height: 15),
+                  SizedBox(height: relativeHeight(2)),
                   Text(
                     'Thank you for using this app',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.cedarvilleCursive(
                       textStyle: TextStyle(
-                        fontSize: 20,
+                        fontSize: relativeWidth(6),
                         color: themeManager.themeData.hintColor,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(height: relativeHeight(3)),
                   CustomSettingContainer(
                     onTap: () {
                       Navigator.push(
@@ -122,7 +133,7 @@ class _SettingPageState extends State<SettingPage> {
                       textAlign: TextAlign.center,
                       style: GoogleFonts.roboto(
                         textStyle: TextStyle(
-                          fontSize: 12,
+                          fontSize: relativeWidth(4),
                           color: themeManager.themeData.hintColor,
                           fontWeight: FontWeight.w900,
                         ),

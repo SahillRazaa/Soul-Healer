@@ -19,13 +19,26 @@ class _EmailscreenState extends State<Emailscreen> {
     final controllerSubject = TextEditingController();
     final controllerMessage = TextEditingController();
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    double relativeWidth(double percentage) {
+      return screenWidth * (percentage / 100);
+    }
+
+    double relativeHeight(double percentage) {
+      return screenHeight * (percentage / 100);
+    }
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: themeManager.themeData.scaffoldBackgroundColor,
+        backgroundColor: themeManager.themeData.hintColor,
         elevation: 0,
         leading: IconButton(
-          color: themeManager.themeData.hintColor,
-          icon: const Icon(Icons.arrow_back),
+          color: themeManager.themeData.primaryColor,
+          icon: const Icon(
+            Icons.arrow_back,
+          ),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -34,9 +47,9 @@ class _EmailscreenState extends State<Emailscreen> {
           "Email Us",
           style: GoogleFonts.roboto(
             textStyle: TextStyle(
-              color: themeManager.themeData.hintColor,
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
+              color: themeManager.themeData.primaryColor,
+              fontSize: relativeWidth(5),
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
@@ -46,31 +59,33 @@ class _EmailscreenState extends State<Emailscreen> {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: themeManager.themeData.hintColor,
+              color: Colors.white,
             ),
           ),
           SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(
+                horizontal: relativeWidth(3),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   buildTextField(
-                      title: "\nSubject",
+                      title: "\nEnter the Subject",
                       controller: controllerSubject,
                       themeManager: themeManager,
-                      hint: "Enter the subject"),
-                  const SizedBox(
-                    height: 10,
+                      hint: ""),
+                  SizedBox(
+                    height: relativeHeight(1),
                   ),
                   buildTextField(
-                      title: "Message",
+                      title: "Enter the Message",
                       controller: controllerMessage,
                       maxLines: 8,
                       themeManager: themeManager,
-                      hint: "Enter your message"),
-                  const SizedBox(
-                    height: 20,
+                      hint: ""),
+                  SizedBox(
+                    height: relativeHeight(2),
                   ),
                   Center(
                     child: GestureDetector(
@@ -99,12 +114,12 @@ class _EmailscreenState extends State<Emailscreen> {
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 25,
+                          vertical: relativeHeight(1),
+                          horizontal: relativeWidth(6),
                         ),
                         decoration: BoxDecoration(
-                          color: themeManager.themeData.primaryColor,
-                          borderRadius: BorderRadius.circular(14),
+                          color: themeManager.themeData.hintColor,
+                          borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
                               color: themeManager.themeData.primaryColor
@@ -118,9 +133,9 @@ class _EmailscreenState extends State<Emailscreen> {
                           'SEND',
                           style: GoogleFonts.raleway(
                             textStyle: TextStyle(
-                              color: themeManager.themeData.hintColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                              color: themeManager.themeData.primaryColor,
+                              fontSize: relativeWidth(5),
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),

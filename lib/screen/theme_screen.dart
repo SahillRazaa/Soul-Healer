@@ -9,42 +9,32 @@ class ThemeListScreen extends StatelessWidget {
     {
       'name': 'Coral Teal Theme',
       'themeData': coralTealTheme,
-      'scaffoldBackgroundColor': coralTealTheme.scaffoldBackgroundColor,
+      'hintColor': coralTealTheme.hintColor,
     },
     {
       'name': 'Turquoise Purple Theme',
       'themeData': turquoisePurpleTheme,
-      'scaffoldBackgroundColor': turquoisePurpleTheme.scaffoldBackgroundColor,
+      'hintColor': turquoisePurpleTheme.hintColor,
     },
     {
       'name': 'Lavender Orange Theme',
       'themeData': lavenderOrangeTheme,
-      'scaffoldBackgroundColor': lavenderOrangeTheme.scaffoldBackgroundColor,
+      'hintColor': lavenderOrangeTheme.hintColor,
     },
     {
       'name': 'Cyan Magenta Theme',
       'themeData': cyanMagentaTheme,
-      'scaffoldBackgroundColor': cyanMagentaTheme.scaffoldBackgroundColor,
-    },
-    {
-      'name': 'Peach Turquoise Theme',
-      'themeData': peachTurquoiseTheme,
-      'scaffoldBackgroundColor': peachTurquoiseTheme.scaffoldBackgroundColor,
-    },
-    {
-      'name': 'Lime Blue Theme',
-      'themeData': limeBlueTheme,
-      'scaffoldBackgroundColor': limeBlueTheme.scaffoldBackgroundColor,
+      'hintColor': cyanMagentaTheme.hintColor,
     },
     {
       'name': 'Mint Coral Theme',
       'themeData': mintCoralTheme,
-      'scaffoldBackgroundColor': mintCoralTheme.scaffoldBackgroundColor,
+      'hintColor': mintCoralTheme.hintColor,
     },
     {
       'name': 'Indigo Cyan Theme',
       'themeData': indigoCyanTheme,
-      'scaffoldBackgroundColor': indigoCyanTheme.scaffoldBackgroundColor,
+      'hintColor': indigoCyanTheme.hintColor,
     },
   ];
 
@@ -52,22 +42,36 @@ class ThemeListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeManager = Provider.of<ThemeManager>(context);
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    double relativeWidth(double percentage) {
+      return screenWidth * (percentage / 100);
+    }
+
+    double relativeHeight(double percentage) {
+      return screenHeight * (percentage / 100);
+    }
+
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'Themes',
           style: GoogleFonts.raleway(
             textStyle: TextStyle(
-              color: themeManager.themeData.hintColor,
-              fontSize: 20,
+              color: themeManager.themeData.primaryColor,
+              fontSize: relativeWidth(5),
               fontWeight: FontWeight.w700,
             ),
           ),
         ),
         iconTheme: IconThemeData(
-          color: themeManager.themeData.hintColor,
+          color: themeManager.themeData.primaryColor,
+          size: relativeWidth(7),
         ),
-        backgroundColor: themeManager.themeData.scaffoldBackgroundColor,
+        backgroundColor: themeManager.themeData.hintColor,
+        centerTitle: true,
       ),
       body: ListView.builder(
         itemCount: themes.length,
@@ -77,23 +81,19 @@ class ThemeListScreen extends StatelessWidget {
 
           return ListTile(
             leading: CircleAvatar(
-              backgroundColor: theme['scaffoldBackgroundColor'],
+              backgroundColor: theme['hintColor'],
             ),
             title: Text(
               theme['name'],
               style: GoogleFonts.raleway(
                 textStyle: TextStyle(
-                  color: isActive
-                      ? Colors.white
-                      : theme['scaffoldBackgroundColor'],
-                  fontSize: 20,
+                  color: theme['hintColor'],
+                  fontSize: relativeWidth(4),
                   fontWeight: FontWeight.w700,
                 ),
               ),
             ),
-            tileColor: isActive
-                ? themeManager.themeData.hintColor
-                : Colors.transparent,
+            tileColor: isActive ? Colors.black : Colors.transparent,
             onTap: () {
               themeManager.setTheme(theme['themeData']);
               Navigator.of(context).pop();

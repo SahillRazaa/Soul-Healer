@@ -13,26 +13,14 @@ final ThemeData turquoisePurpleTheme = ThemeData(
 );
 
 final ThemeData lavenderOrangeTheme = ThemeData(
-  primaryColor: Color(0xFFE6E6FA), // Lavender
+  primaryColor: Color.fromARGB(255, 119, 119, 191), // Lavender
   hintColor: Color(0xFFFFA500), // Orange
   scaffoldBackgroundColor: Color(0xFFFFFFFF), // White
 );
 
 final ThemeData cyanMagentaTheme = ThemeData(
-  primaryColor: Color(0xFF00FFFF), // Cyan
-  hintColor: Color(0xFFFF00FF), // Magenta
-  scaffoldBackgroundColor: Color(0xFFFFFFFF), // White
-);
-
-final ThemeData peachTurquoiseTheme = ThemeData(
-  primaryColor: Color(0xFFFFE5B4), // Peach
-  hintColor: Color(0xFF40E0D0), // Turquoise
-  scaffoldBackgroundColor: Color(0xFFFFFFFF), // White
-);
-
-final ThemeData limeBlueTheme = ThemeData(
-  primaryColor: Color(0xFF32CD32), // Lime Green
-  hintColor: Color(0xFF4682B4), // Steel Blue
+  primaryColor: Color.fromARGB(255, 66, 153, 153), // Cyan
+  hintColor: Color.fromARGB(255, 150, 76, 150), // Magenta
   scaffoldBackgroundColor: Color(0xFFFFFFFF), // White
 );
 

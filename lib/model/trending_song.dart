@@ -200,7 +200,7 @@ class _TrendingSongState extends State<TrendingSong> {
                 songName = widget.formatTitle(songName);
                 artistName = widget.formatTitle(artistName);
 
-                int newLength = (relativeWidth(55) / 8).floor();
+                int newLength = (relativeWidth(25) / 8).floor();
 
                 if (songName.length > newLength) {
                   songName = '${songName.substring(0, newLength)}..';
@@ -345,7 +345,7 @@ class _TrendingSongState extends State<TrendingSong> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Delete Confirmation'),
+          title: const Text('Add to Favorites'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[

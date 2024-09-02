@@ -18,23 +18,36 @@ class AboutUsPage extends StatelessWidget {
       }
     }
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    double relativeWidth(double percentage) {
+      return screenWidth * (percentage / 100);
+    }
+
+    double relativeHeight(double percentage) {
+      return screenHeight * (percentage / 100);
+    }
+
     return Scaffold(
-      backgroundColor: themeManager.themeData.hintColor,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'About Us',
           style: GoogleFonts.raleway(
             textStyle: TextStyle(
               color: themeManager.themeData.primaryColor,
-              fontSize: 20,
+              fontSize: relativeWidth(5),
               fontWeight: FontWeight.w700,
             ),
           ),
         ),
         iconTheme: IconThemeData(
           color: themeManager.themeData.primaryColor,
+          size: relativeWidth(7),
         ),
-        backgroundColor: themeManager.themeData.scaffoldBackgroundColor,
+        backgroundColor: themeManager.themeData.hintColor,
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -46,76 +59,76 @@ class AboutUsPage extends StatelessWidget {
                 'About Us',
                 style: GoogleFonts.raleway(
                   textStyle: TextStyle(
-                    color: themeManager.themeData.primaryColor,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
+                    color: themeManager.themeData.hintColor,
+                    fontSize: relativeWidth(10),
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: relativeWidth(2.5)),
               Text(
                 'Welcome to Soul Healer!',
                 style: GoogleFonts.raleway(
                   textStyle: TextStyle(
-                    color: themeManager.themeData.primaryColor,
-                    fontSize: 20,
+                    color: themeManager.themeData.hintColor,
+                    fontSize: relativeWidth(6),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: relativeWidth(2.5)),
               Text(
                 'Soul Healer is a unique music app designed to bring you a curated selection of your favorite tunes, all powered by the YouTube API. As a solo project, this app is a labor of love, developed with the aim of providing a simple yet enjoyable music streaming experience.',
                 style: GoogleFonts.raleway(
                   textStyle: TextStyle(
-                    color: themeManager.themeData.scaffoldBackgroundColor,
-                    fontSize: 16,
+                    color: themeManager.themeData.primaryColor,
+                    fontSize: relativeWidth(4.5),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: relativeWidth(2.5)),
               Text(
                 'Our Mission',
                 style: GoogleFonts.raleway(
                   textStyle: TextStyle(
-                    color: themeManager.themeData.primaryColor,
-                    fontSize: 20,
+                    color: themeManager.themeData.hintColor,
+                    fontSize: relativeWidth(6),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-              SizedBox(height: 8),
+              SizedBox(height: relativeWidth(1.5)),
               Text(
                 'Our mission is to create an easy-to-use music app that allows you to enjoy a selection of handpicked songs. We believe in quality over quantity, which is why we focus on providing a limited but excellent range of music.',
                 style: GoogleFonts.raleway(
                   textStyle: TextStyle(
-                    color: themeManager.themeData.scaffoldBackgroundColor,
-                    fontSize: 16,
+                    color: themeManager.themeData.primaryColor,
+                    fontSize: relativeWidth(4.5),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: relativeWidth(2.5)),
               Text(
                 'Why Soul Healer?',
                 style: GoogleFonts.raleway(
                   textStyle: TextStyle(
-                    color: themeManager.themeData.primaryColor,
-                    fontSize: 20,
+                    color: themeManager.themeData.hintColor,
+                    fontSize: relativeWidth(6),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-              SizedBox(height: 8),
+              SizedBox(height: relativeWidth(1.5)),
               Text.rich(
                 TextSpan(
                   children: <TextSpan>[
                     TextSpan(
                       text: '- Curated Selection:',
                       style: TextStyle(
-                        color: themeManager.themeData.primaryColor,
-                        fontSize: 16,
+                        color: themeManager.themeData.hintColor,
+                        fontSize: relativeWidth(5),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -123,8 +136,8 @@ class AboutUsPage extends StatelessWidget {
                       text:
                           ' Enjoy a handpicked selection of songs tailored for a superior listening experience.',
                       style: TextStyle(
-                        color: themeManager.themeData.scaffoldBackgroundColor,
-                        fontSize: 16,
+                        color: themeManager.themeData.primaryColor,
+                        fontSize: relativeWidth(4.5),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -137,8 +150,8 @@ class AboutUsPage extends StatelessWidget {
                     TextSpan(
                       text: '- Seamless Integration:',
                       style: TextStyle(
-                        color: themeManager.themeData.primaryColor,
-                        fontSize: 16,
+                        color: themeManager.themeData.hintColor,
+                        fontSize: relativeWidth(5),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -146,8 +159,8 @@ class AboutUsPage extends StatelessWidget {
                       text:
                           ' Powered by the YouTube API, our app ensures smooth and high-quality music streaming.',
                       style: TextStyle(
-                        color: themeManager.themeData.scaffoldBackgroundColor,
-                        fontSize: 16,
+                        color: themeManager.themeData.primaryColor,
+                        fontSize: relativeWidth(4.5),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -160,8 +173,8 @@ class AboutUsPage extends StatelessWidget {
                     TextSpan(
                       text: '- User-Friendly Interface:',
                       style: TextStyle(
-                        color: themeManager.themeData.primaryColor,
-                        fontSize: 16,
+                        color: themeManager.themeData.hintColor,
+                        fontSize: relativeWidth(5),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -169,58 +182,58 @@ class AboutUsPage extends StatelessWidget {
                       text:
                           ' With a clean and intuitive interface, Soul Healer makes it easy for you to find and play your favorite tracks.',
                       style: TextStyle(
-                        color: themeManager.themeData.scaffoldBackgroundColor,
-                        fontSize: 16,
+                        color: themeManager.themeData.primaryColor,
+                        fontSize: relativeWidth(4.5),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: relativeWidth(2.5)),
               Text(
                 'About the Developer',
                 style: GoogleFonts.raleway(
                   textStyle: TextStyle(
-                    color: themeManager.themeData.primaryColor,
-                    fontSize: 20,
+                    color: themeManager.themeData.hintColor,
+                    fontSize: relativeWidth(5),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-              SizedBox(height: 8),
+              SizedBox(height: relativeWidth(1.5)),
               Text.rich(
                 TextSpan(
                   children: <TextSpan>[
                     TextSpan(
                       text: 'Hi, I\'m ',
                       style: TextStyle(
-                        color: themeManager.themeData.scaffoldBackgroundColor,
-                        fontSize: 16,
+                        color: themeManager.themeData.primaryColor,
+                        fontSize: relativeWidth(4.5),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     TextSpan(
                       text: 'Sahil Raza Ansari',
                       style: TextStyle(
-                        color: themeManager.themeData.primaryColor,
-                        fontSize: 16,
+                        color: themeManager.themeData.hintColor,
+                        fontSize: relativeWidth(4.5),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     TextSpan(
                       text: ' the solo developer behind',
                       style: TextStyle(
-                        color: themeManager.themeData.scaffoldBackgroundColor,
-                        fontSize: 16,
+                        color: themeManager.themeData.primaryColor,
+                        fontSize: relativeWidth(4.5),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     TextSpan(
                       text: ' Soul Healer.\n\n',
                       style: TextStyle(
-                        color: themeManager.themeData.primaryColor,
-                        fontSize: 16,
+                        color: themeManager.themeData.hintColor,
+                        fontSize: relativeWidth(4.5),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -228,38 +241,39 @@ class AboutUsPage extends StatelessWidget {
                       text:
                           'I am a Full Stack MERN and Flutter developer, currently doing my BTech. This app is a passion project, created to combine my love for music and technology. I am dedicated to continuously improving the app and providing you with the best possible music streaming experience.',
                       style: TextStyle(
-                        color: themeManager.themeData.scaffoldBackgroundColor,
-                        fontSize: 16,
+                        color: themeManager.themeData.primaryColor,
+                        fontSize: relativeWidth(4.5),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: relativeWidth(2.5)),
               Text(
                 'Contact Us',
                 style: GoogleFonts.raleway(
                   textStyle: TextStyle(
-                    color: themeManager.themeData.primaryColor,
-                    fontSize: 20,
+                    color: themeManager.themeData.hintColor,
+                    fontSize: relativeWidth(5),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-              SizedBox(height: 8),
+              SizedBox(height: relativeHeight(1.5)),
               Column(
                 children: [
                   Text(
                     'I value your feedback and am always here to help. If you have any questions, suggestions, or just want to say hello, feel free to reach out at my PortFolio.',
                     style: GoogleFonts.raleway(
                       textStyle: TextStyle(
-                        color: themeManager.themeData.scaffoldBackgroundColor,
-                        fontSize: 16,
+                        color: themeManager.themeData.primaryColor,
+                        fontSize: relativeWidth(4.5),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
+                  SizedBox(height: relativeHeight(1.5)),
                   GestureDetector(
                     onTap: _launchURL,
                     child: Container(
@@ -269,7 +283,7 @@ class AboutUsPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(14),
                         boxShadow: [
                           BoxShadow(
-                            color: themeManager.themeData.primaryColor
+                            color: themeManager.themeData.hintColor
                                 .withOpacity(0.3),
                             spreadRadius: 5,
                             blurRadius: 4,
@@ -281,7 +295,7 @@ class AboutUsPage extends StatelessWidget {
                         style: GoogleFonts.raleway(
                           textStyle: TextStyle(
                             color: themeManager.themeData.hintColor,
-                            fontSize: 16,
+                            fontSize: relativeWidth(5),
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -290,13 +304,13 @@ class AboutUsPage extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 16),
+              SizedBox(height: relativeWidth(2.5)),
               Text(
                 '\n"Thank you for choosing Soul Healer. Enjoy the music!"',
                 style: GoogleFonts.raleway(
                   textStyle: TextStyle(
-                    color: themeManager.themeData.primaryColor,
-                    fontSize: 16,
+                    color: themeManager.themeData.hintColor,
+                    fontSize: relativeWidth(4.5),
                     fontWeight: FontWeight.w600,
                   ),
                 ),

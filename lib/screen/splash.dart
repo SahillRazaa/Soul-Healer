@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:soul_healer/providers/theme_manager.dart';
 import 'package:soul_healer/screen/common.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -28,11 +30,19 @@ class _SplashState extends State<Splash> {
 
   @override
   Widget build(BuildContext context) {
+    final themeManager = Provider.of<ThemeManager>(context, listen: true);
+
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    double relativeWidth(double percentage) {
+      return screenWidth * (percentage / 100);
+    }
+
     return Scaffold(
       body: Stack(
         children: [
           Container(
-            color: Color.fromARGB(255, 138, 39, 39),
+            color: themeManager.themeData.hintColor,
           ),
           Positioned.fill(
             child: Opacity(
@@ -49,23 +59,23 @@ class _SplashState extends State<Splash> {
               children: [
                 Image.asset(
                   "assets/logo.png",
-                  width: 170,
-                  height: 170,
+                  width: relativeWidth(40),
+                  height: relativeWidth(40),
                 ),
                 Text(
                   'Soul Healer',
                   style: GoogleFonts.montserrat(
-                    fontSize: 32,
+                    fontSize: relativeWidth(5),
                     fontWeight: FontWeight.w700,
-                    color: Color.fromARGB(255, 60, 9, 9),
+                    color: themeManager.themeData.primaryColor,
                   ),
                 ),
                 Text(
                   '"Harmonize your day"',
                   style: GoogleFonts.roboto(
-                    fontSize: 20,
+                    fontSize: relativeWidth(2.5),
                     fontWeight: FontWeight.w600,
-                    color: Color.fromARGB(255, 255, 181, 181),
+                    color: themeManager.themeData.scaffoldBackgroundColor,
                   ),
                 ),
               ],

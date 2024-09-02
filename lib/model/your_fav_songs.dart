@@ -109,7 +109,7 @@ class _FavPageModelState extends State<FavPageModel> {
             style: GoogleFonts.roboto(
               textStyle: TextStyle(
                 fontSize: relativeWidth(5),
-                color: themeManager.themeData.primaryColor,
+                color: themeManager.themeData.hintColor,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -144,7 +144,7 @@ class _FavPageModelState extends State<FavPageModel> {
                     songName = formatTitle(songName);
                     artistName = formatTitle(artistName);
 
-                    int newLength = (relativeWidth(55) / 8).floor();
+                    int newLength = (relativeWidth(25) / 8).floor();
 
                     if (songName.length > newLength) {
                       songName = '${songName.substring(0, newLength)}..';
@@ -200,8 +200,11 @@ class _FavPageModelState extends State<FavPageModel> {
                         ],
                       ),
                       trailing: IconButton(
-                        icon: const Icon(Icons.delete_forever_rounded),
-                        color: themeManager.themeData.primaryColor,
+                        icon: Icon(
+                          Icons.delete_forever_rounded,
+                          size: relativeWidth(6),
+                        ),
+                        color: themeManager.themeData.hintColor,
                         onPressed: () {
                           _showDeleteConfirmationDialog(context, song, index);
                         },

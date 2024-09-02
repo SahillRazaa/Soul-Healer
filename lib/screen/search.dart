@@ -237,13 +237,23 @@ class _SearchPageState extends State<SearchPage> {
                                 style: GoogleFonts.roboto(
                                   textStyle: TextStyle(
                                     fontSize: relativeWidth(5),
-                                    color: themeManager.themeData.primaryColor,
+                                    color: themeManager.themeData.hintColor,
                                     fontWeight: FontWeight.w900,
                                   ),
                                 ),
                               ),
                               recentSearches.isEmpty
-                                  ? const Text("No recent searches")
+                                  ? Text(
+                                      "No recent searches",
+                                      style: GoogleFonts.roboto(
+                                        textStyle: TextStyle(
+                                          fontSize: relativeWidth(3),
+                                          color: themeManager
+                                              .themeData.primaryColor,
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                      ),
+                                    )
                                   : buildRecentSearchesSection(
                                       context,
                                       recentSearches,
@@ -259,7 +269,7 @@ class _SearchPageState extends State<SearchPage> {
                                 style: GoogleFonts.roboto(
                                   textStyle: TextStyle(
                                     fontSize: relativeWidth(5),
-                                    color: themeManager.themeData.primaryColor,
+                                    color: themeManager.themeData.hintColor,
                                     fontWeight: FontWeight.w900,
                                   ),
                                 ),
@@ -373,8 +383,7 @@ class _SearchPageState extends State<SearchPage> {
                                     ),
                                     trailing: IconButton(
                                       icon: const Icon(Icons.favorite),
-                                      color:
-                                          themeManager.themeData.primaryColor,
+                                      color: themeManager.themeData.hintColor,
                                       onPressed: () {
                                         if (_isSongInFavorites(songData)) {
                                           _showAlreadyInFavoritesDialog(
@@ -517,8 +526,11 @@ class _SearchPageState extends State<SearchPage> {
                   ],
                 ),
                 trailing: IconButton(
-                  icon: const Icon(Icons.delete_forever_rounded),
-                  color: themeManager.themeData.primaryColor,
+                  icon: Icon(
+                    Icons.delete_forever_rounded,
+                    size: relativeWidth(6),
+                  ),
+                  color: themeManager.themeData.hintColor,
                   onPressed: () {
                     _showDeleteConfirmationDialog(context, song, index);
                   },
@@ -596,9 +608,10 @@ class _SearchPageState extends State<SearchPage> {
               child: const Text('Yes'),
               onPressed: () async {
                 setState(() {
-                  recentSearches.removeAt(index);
+                  recentSearches
+                      .removeWhere((item) => item['id'] == song['id']);
                 });
-                await _saveRecentSearches();
+                _saveRecentSearches();
                 Navigator.of(context).pop();
               },
             ),

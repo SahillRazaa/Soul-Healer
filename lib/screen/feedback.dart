@@ -10,6 +10,18 @@ class StartPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeManager = Provider.of<ThemeManager>(context, listen: true);
 
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    double relativeWidth(double percentage) {
+      return screenWidth * (percentage / 100);
+    }
+
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    double relativeHeight(double percentage) {
+      return screenHeight * (percentage / 100);
+    }
+
     return Scaffold(
       backgroundColor: themeManager.themeData.hintColor,
       appBar: AppBar(
@@ -18,26 +30,30 @@ class StartPage extends StatelessWidget {
           style: GoogleFonts.raleway(
             textStyle: TextStyle(
               color: themeManager.themeData.hintColor,
-              fontSize: 20,
+              fontSize: relativeWidth(5),
               fontWeight: FontWeight.w600,
             ),
           ),
         ),
         iconTheme: IconThemeData(
           color: themeManager.themeData.hintColor,
+          size: relativeWidth(7),
         ),
-        backgroundColor: themeManager.themeData.scaffoldBackgroundColor,
+        backgroundColor: themeManager.themeData.primaryColor,
+        centerTitle: true,
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(60),
+              borderRadius: BorderRadius.circular(
+                relativeWidth(10),
+              ),
               child: Image.asset('assets/feedback.png'),
             ),
             SizedBox(
-              height: 40,
+              height: relativeHeight(5),
             ),
             GestureDetector(
               onTap: () {
@@ -50,12 +66,14 @@ class StartPage extends StatelessWidget {
               },
               child: Container(
                 padding: EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 25,
+                  vertical: relativeHeight(2),
+                  horizontal: relativeWidth(10),
                 ),
                 decoration: BoxDecoration(
                   color: themeManager.themeData.primaryColor,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(
+                    relativeWidth(4),
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color:
@@ -70,7 +88,7 @@ class StartPage extends StatelessWidget {
                   style: GoogleFonts.raleway(
                     textStyle: TextStyle(
                       color: themeManager.themeData.hintColor,
-                      fontSize: 16,
+                      fontSize: relativeWidth(5),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -120,6 +138,12 @@ class _EmailInputPageState extends State<EmailInputPage> {
   Widget build(BuildContext context) {
     final themeManager = Provider.of<ThemeManager>(context, listen: true);
 
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    double relativeWidth(double percentage) {
+      return screenWidth * (percentage / 100);
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -127,15 +151,17 @@ class _EmailInputPageState extends State<EmailInputPage> {
           style: GoogleFonts.raleway(
             textStyle: TextStyle(
               color: themeManager.themeData.hintColor,
-              fontSize: 20,
+              fontSize: relativeWidth(5),
               fontWeight: FontWeight.w600,
             ),
           ),
         ),
         iconTheme: IconThemeData(
           color: themeManager.themeData.hintColor,
+          size: relativeWidth(7),
         ),
-        backgroundColor: themeManager.themeData.scaffoldBackgroundColor,
+        backgroundColor: themeManager.themeData.primaryColor,
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -143,10 +169,12 @@ class _EmailInputPageState extends State<EmailInputPage> {
           child: Column(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(60),
+                borderRadius: BorderRadius.circular(
+                  relativeWidth(10),
+                ),
                 child: Image.asset(
                   'assets/email.png',
-                  width: 200,
+                  width: relativeWidth(60),
                 ),
               ),
               Text(
@@ -154,7 +182,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
                 style: GoogleFonts.raleway(
                   textStyle: TextStyle(
                     color: themeManager.themeData.hintColor,
-                    fontSize: 20,
+                    fontSize: relativeWidth(5),
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -167,7 +195,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
                 style: GoogleFonts.raleway(
                   textStyle: TextStyle(
                     color: themeManager.themeData.hintColor,
-                    fontSize: 16,
+                    fontSize: relativeWidth(5),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -185,7 +213,9 @@ class _EmailInputPageState extends State<EmailInputPage> {
                       TextStyle(color: themeManager.themeData.hintColor),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(
-                      Radius.circular(20),
+                      Radius.circular(
+                        relativeWidth(3),
+                      ),
                     ),
                   ),
                   prefixIcon: GestureDetector(
@@ -208,15 +238,15 @@ class _EmailInputPageState extends State<EmailInputPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 20),
               GestureDetector(
                 onTap: () {
                   _startFeedback();
                 },
                 child: Container(
                   padding: EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 25,
+                    vertical: relativeWidth(3),
+                    horizontal: relativeWidth(10),
                   ),
                   decoration: BoxDecoration(
                     color: themeManager.themeData.primaryColor,
@@ -235,7 +265,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
                     style: GoogleFonts.raleway(
                       textStyle: TextStyle(
                         color: themeManager.themeData.hintColor,
-                        fontSize: 16,
+                        fontSize: relativeWidth(5),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -317,14 +347,20 @@ class _RatingGamePageState extends State<RatingGamePage> {
       builder: (context) {
         final themeManager = Provider.of<ThemeManager>(context, listen: true);
 
+        final screenWidth = MediaQuery.of(context).size.width;
+
+        double relativeWidth(double percentage) {
+          return screenWidth * (percentage / 100);
+        }
+
         return AlertDialog(
-          backgroundColor: themeManager.themeData.primaryColor,
+          backgroundColor: themeManager.themeData.hintColor,
           title: Text(
             'Confirm Feedback',
             style: GoogleFonts.raleway(
               textStyle: TextStyle(
-                color: themeManager.themeData.hintColor,
-                fontSize: 20,
+                color: themeManager.themeData.primaryColor,
+                fontSize: relativeWidth(5),
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -333,8 +369,8 @@ class _RatingGamePageState extends State<RatingGamePage> {
             'Are you sure you want to send your feedback?',
             style: GoogleFonts.raleway(
               textStyle: TextStyle(
-                color: themeManager.themeData.hintColor,
-                fontSize: 16,
+                color: themeManager.themeData.primaryColor,
+                fontSize: relativeWidth(4),
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -366,7 +402,7 @@ class _RatingGamePageState extends State<RatingGamePage> {
                   style: GoogleFonts.raleway(
                     textStyle: TextStyle(
                       color: themeManager.themeData.hintColor,
-                      fontSize: 14,
+                      fontSize: relativeWidth(3),
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -399,7 +435,7 @@ class _RatingGamePageState extends State<RatingGamePage> {
                   style: GoogleFonts.raleway(
                     textStyle: TextStyle(
                       color: themeManager.themeData.hintColor,
-                      fontSize: 14,
+                      fontSize: relativeWidth(3),
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -434,15 +470,25 @@ class _RatingGamePageState extends State<RatingGamePage> {
       context: context,
       builder: (context) {
         final themeManager = Provider.of<ThemeManager>(context, listen: true);
+        final screenWidth = MediaQuery.of(context).size.width;
+        final screenHeight = MediaQuery.of(context).size.height;
+
+        double relativeWidth(double percentage) {
+          return screenWidth * (percentage / 100);
+        }
+
+        double relativeHeight(double percentage) {
+          return screenHeight * (percentage / 100);
+        }
 
         return AlertDialog(
-          backgroundColor: themeManager.themeData.primaryColor,
+          backgroundColor: themeManager.themeData.hintColor.withOpacity(0.7),
           title: Text(
             'Thank You!',
             style: GoogleFonts.raleway(
               textStyle: TextStyle(
-                color: themeManager.themeData.hintColor,
-                fontSize: 20,
+                color: themeManager.themeData.primaryColor,
+                fontSize: relativeWidth(2.2),
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -456,20 +502,22 @@ class _RatingGamePageState extends State<RatingGamePage> {
                   'Your feedback has been submitted. Here are your responses:',
                   style: GoogleFonts.raleway(
                     textStyle: TextStyle(
-                      color: themeManager.themeData.hintColor,
-                      fontSize: 15,
+                      color: themeManager.themeData.primaryColor,
+                      fontSize: relativeWidth(1.8),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
+                SizedBox(
+                  height: relativeHeight(2),
+                ),
                 ..._answers.entries.map(
                   (entry) => Text(
                     '${_questions[entry.key].text}\nAnswer: ${entry.value}\n',
                     style: GoogleFonts.raleway(
                       textStyle: TextStyle(
-                        color: themeManager.themeData.hintColor,
-                        fontSize: 13,
+                        color: themeManager.themeData.primaryColor,
+                        fontSize: relativeWidth(1.4),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -486,7 +534,7 @@ class _RatingGamePageState extends State<RatingGamePage> {
               ),
               decoration: BoxDecoration(
                 color: themeManager.themeData.primaryColor,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(relativeWidth(1.2)),
                 boxShadow: [
                   BoxShadow(
                     color: themeManager.themeData.hintColor.withOpacity(0.5),
@@ -511,7 +559,7 @@ class _RatingGamePageState extends State<RatingGamePage> {
                   style: GoogleFonts.raleway(
                     textStyle: TextStyle(
                       color: themeManager.themeData.hintColor,
-                      fontSize: 14,
+                      fontSize: relativeWidth(1.8),
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -519,7 +567,7 @@ class _RatingGamePageState extends State<RatingGamePage> {
               ),
             ),
             SizedBox(
-              height: 20,
+              height: relativeHeight(2),
             ),
             Container(
               padding: EdgeInsets.symmetric(
@@ -528,7 +576,9 @@ class _RatingGamePageState extends State<RatingGamePage> {
               ),
               decoration: BoxDecoration(
                 color: themeManager.themeData.primaryColor,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(
+                  relativeWidth(1.4),
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: themeManager.themeData.hintColor.withOpacity(0.5),
@@ -554,7 +604,7 @@ class _RatingGamePageState extends State<RatingGamePage> {
                   style: GoogleFonts.raleway(
                     textStyle: TextStyle(
                       color: themeManager.themeData.hintColor,
-                      fontSize: 14,
+                      fontSize: relativeHeight(1.8),
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -573,6 +623,17 @@ class _RatingGamePageState extends State<RatingGamePage> {
 
     final themeManager = Provider.of<ThemeManager>(context, listen: true);
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    double relativeWidth(double percentage) {
+      return screenWidth * (percentage / 100);
+    }
+
+    double relativeHeight(double percentage) {
+      return screenHeight * (percentage / 100);
+    }
+
     return Scaffold(
       backgroundColor: themeManager.themeData.scaffoldBackgroundColor,
       appBar: AppBar(
@@ -581,7 +642,7 @@ class _RatingGamePageState extends State<RatingGamePage> {
           style: GoogleFonts.raleway(
             textStyle: TextStyle(
               color: themeManager.themeData.primaryColor,
-              fontSize: 20,
+              fontSize: relativeWidth(3),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -601,12 +662,12 @@ class _RatingGamePageState extends State<RatingGamePage> {
               style: GoogleFonts.raleway(
                 textStyle: TextStyle(
                   color: themeManager.themeData.hintColor,
-                  fontSize: 20,
+                  fontSize: relativeWidth(3),
                   fontWeight: FontWeight.w800,
                 ),
               ),
             ),
-            SizedBox(height: 16),
+            SizedBox(height: relativeHeight(1.5)),
             Column(
               children: List.generate(question.options.length, (index) {
                 return GestureDetector(
@@ -615,16 +676,18 @@ class _RatingGamePageState extends State<RatingGamePage> {
                     children: [
                       Image.asset(
                         question.images[index],
-                        width: 60,
-                        height: 60,
+                        width: relativeWidth(10),
+                        height: relativeWidth(10),
                       ),
-                      SizedBox(width: 10),
+                      SizedBox(
+                        width: relativeHeight(1),
+                      ),
                       Text(
                         question.options[index],
                         style: GoogleFonts.raleway(
                           textStyle: TextStyle(
                             color: themeManager.themeData.hintColor,
-                            fontSize: 16,
+                            fontSize: relativeWidth(2),
                             fontWeight: FontWeight.w600,
                           ),
                         ),

@@ -9,6 +9,17 @@ class PrivacyPolicyPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeManager = Provider.of<ThemeManager>(context, listen: true);
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    double relativeWidth(double percentage) {
+      return screenWidth * (percentage / 100);
+    }
+
+    double relativeHeight(double percentage) {
+      return screenHeight * (percentage / 100);
+    }
+
     return Scaffold(
       backgroundColor: themeManager.themeData.scaffoldBackgroundColor,
       appBar: AppBar(
@@ -17,7 +28,7 @@ class PrivacyPolicyPage extends StatelessWidget {
           style: GoogleFonts.raleway(
             textStyle: TextStyle(
               color: themeManager.themeData.primaryColor,
-              fontSize: 20,
+              fontSize: relativeWidth(5),
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -25,6 +36,7 @@ class PrivacyPolicyPage extends StatelessWidget {
         iconTheme: IconThemeData(
           color: themeManager.themeData.primaryColor,
         ),
+        centerTitle: true,
         backgroundColor: themeManager.themeData.hintColor,
       ),
       body: SingleChildScrollView(
@@ -37,31 +49,33 @@ class PrivacyPolicyPage extends StatelessWidget {
               style: GoogleFonts.raleway(
                 textStyle: TextStyle(
                   color: themeManager.themeData.hintColor,
-                  fontSize: 26,
+                  fontSize: relativeWidth(10),
                   fontWeight: FontWeight.w800,
                 ),
               ),
             ),
-            SizedBox(height: 16),
+            SizedBox(
+              height: relativeHeight(2),
+            ),
             Text(
-              'Effective Date: [Insert Date]\n',
+              'Effective Date: 02-08-24\n',
               style: GoogleFonts.raleway(
                 textStyle: TextStyle(
                   color: themeManager.themeData.primaryColor,
-                  fontSize: 18,
+                  fontSize: relativeWidth(6),
                   fontWeight: FontWeight.w700,
                 ),
               ),
             ),
             Text(
-              'Thank you for choosing to be part of our community at [Your App Name]. '
+              'Thank you for choosing to be part of our community at Soul Healer. '
               'We are committed to protecting your personal information and your right to privacy. '
               'If you have any questions or concerns about our policy or our practices with regards to your personal information, '
-              'please contact us at [Your Contact Information].\n',
+              'please contact us at our email.\n',
               style: GoogleFonts.raleway(
                 textStyle: TextStyle(
                   color: themeManager.themeData.hintColor,
-                  fontSize: 16,
+                  fontSize: relativeWidth(4),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -71,7 +85,7 @@ class PrivacyPolicyPage extends StatelessWidget {
               style: GoogleFonts.raleway(
                 textStyle: TextStyle(
                   color: themeManager.themeData.primaryColor,
-                  fontSize: 18,
+                  fontSize: relativeWidth(6),
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -83,7 +97,7 @@ class PrivacyPolicyPage extends StatelessWidget {
               style: GoogleFonts.raleway(
                 textStyle: TextStyle(
                   color: themeManager.themeData.hintColor,
-                  fontSize: 16,
+                  fontSize: relativeWidth(4),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -93,7 +107,7 @@ class PrivacyPolicyPage extends StatelessWidget {
               style: GoogleFonts.raleway(
                 textStyle: TextStyle(
                   color: themeManager.themeData.primaryColor,
-                  fontSize: 18,
+                  fontSize: relativeWidth(6),
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -105,7 +119,7 @@ class PrivacyPolicyPage extends StatelessWidget {
               style: GoogleFonts.raleway(
                 textStyle: TextStyle(
                   color: themeManager.themeData.hintColor,
-                  fontSize: 16,
+                  fontSize: relativeWidth(4),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -115,7 +129,7 @@ class PrivacyPolicyPage extends StatelessWidget {
               style: GoogleFonts.raleway(
                 textStyle: TextStyle(
                   color: themeManager.themeData.primaryColor,
-                  fontSize: 18,
+                  fontSize: relativeWidth(6),
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -126,7 +140,7 @@ class PrivacyPolicyPage extends StatelessWidget {
               style: GoogleFonts.raleway(
                 textStyle: TextStyle(
                   color: themeManager.themeData.hintColor,
-                  fontSize: 16,
+                  fontSize: relativeWidth(4),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -136,7 +150,7 @@ class PrivacyPolicyPage extends StatelessWidget {
               style: GoogleFonts.raleway(
                 textStyle: TextStyle(
                   color: themeManager.themeData.primaryColor,
-                  fontSize: 18,
+                  fontSize: relativeWidth(6),
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -147,7 +161,7 @@ class PrivacyPolicyPage extends StatelessWidget {
               style: GoogleFonts.raleway(
                 textStyle: TextStyle(
                   color: themeManager.themeData.hintColor,
-                  fontSize: 16,
+                  fontSize: relativeWidth(2),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -157,7 +171,7 @@ class PrivacyPolicyPage extends StatelessWidget {
               style: GoogleFonts.raleway(
                 textStyle: TextStyle(
                   color: themeManager.themeData.primaryColor,
-                  fontSize: 18,
+                  fontSize: relativeWidth(6),
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -168,7 +182,7 @@ class PrivacyPolicyPage extends StatelessWidget {
               style: GoogleFonts.raleway(
                 textStyle: TextStyle(
                   color: themeManager.themeData.hintColor,
-                  fontSize: 16,
+                  fontSize: relativeWidth(4),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -178,7 +192,7 @@ class PrivacyPolicyPage extends StatelessWidget {
               style: GoogleFonts.raleway(
                 textStyle: TextStyle(
                   color: themeManager.themeData.primaryColor,
-                  fontSize: 18,
+                  fontSize: relativeWidth(6),
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -189,7 +203,7 @@ class PrivacyPolicyPage extends StatelessWidget {
               style: GoogleFonts.raleway(
                 textStyle: TextStyle(
                   color: themeManager.themeData.hintColor,
-                  fontSize: 16,
+                  fontSize: relativeWidth(4),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -199,7 +213,7 @@ class PrivacyPolicyPage extends StatelessWidget {
               style: GoogleFonts.raleway(
                 textStyle: TextStyle(
                   color: themeManager.themeData.primaryColor,
-                  fontSize: 18,
+                  fontSize: relativeWidth(6),
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -209,7 +223,7 @@ class PrivacyPolicyPage extends StatelessWidget {
               style: GoogleFonts.raleway(
                 textStyle: TextStyle(
                   color: themeManager.themeData.hintColor,
-                  fontSize: 16,
+                  fontSize: relativeWidth(4),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -219,7 +233,7 @@ class PrivacyPolicyPage extends StatelessWidget {
               style: GoogleFonts.raleway(
                 textStyle: TextStyle(
                   color: themeManager.themeData.primaryColor,
-                  fontSize: 18,
+                  fontSize: relativeWidth(6),
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -232,7 +246,7 @@ class PrivacyPolicyPage extends StatelessWidget {
                     style: GoogleFonts.raleway(
                       textStyle: TextStyle(
                         color: themeManager.themeData.hintColor,
-                        fontSize: 14,
+                        fontSize: relativeWidth(4),
                         fontWeight: FontWeight.w500,
                       ),
                     ),

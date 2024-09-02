@@ -50,117 +50,276 @@ class _ContactPageState extends State<ContactPage> {
 
       _showLoader(context);
 
-      if (await canLaunchUrlString(url)) {
-        await launchUrlString(url);
-      } else {
-        throw 'Could not launch $url';
+      try {
+        if (await canLaunchUrlString(url)) {
+          await launchUrlString(url);
+        } else {
+          throw 'Could not launch $url';
+        }
+      } catch (e) {
+        print(e);
+      } finally {
+        Navigator.of(context).pop();
       }
     }
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    double relativeWidth(double percentage) {
+      return screenWidth * (percentage / 100);
+    }
+
+    double relativeHeight(double percentage) {
+      return screenHeight * (percentage / 100);
+    }
+
     return Scaffold(
-      backgroundColor: themeManager.themeData.hintColor,
       appBar: AppBar(
-        title: Text('Contact Us'),
-        backgroundColor: themeManager.themeData.scaffoldBackgroundColor,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Text(
-              'Get in touch with us!',
-              style: GoogleFonts.raleway(
-                textStyle: TextStyle(
-                  color: themeManager.themeData.primaryColor,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+        title: Text(
+          'Contact Us',
+          style: GoogleFonts.raleway(
+            textStyle: TextStyle(
+              color: themeManager.themeData.primaryColor,
+              fontSize: relativeWidth(5),
+              fontWeight: FontWeight.w700,
             ),
-            SizedBox(height: 20),
-            ListTile(
-              leading: Icon(
-                Icons.email,
-                color: themeManager.themeData.primaryColor,
-              ),
-              title: Text(
-                'Email Us',
-                style: GoogleFonts.raleway(
-                  textStyle: TextStyle(
-                    color: themeManager.themeData.primaryColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Emailscreen(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.account_box,
-                color: themeManager.themeData.primaryColor,
-              ),
-              title: Text(
-                'PortFolio',
-                style: GoogleFonts.raleway(
-                  textStyle: TextStyle(
-                    color: themeManager.themeData.primaryColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              onTap: () {
-                _launchURL("Portfolio");
-              },
-            ),
-            ListTile(
-              leading: FaIcon(
-                FontAwesomeIcons.linkedin,
-                color: themeManager.themeData.primaryColor,
-              ),
-              title: Text(
-                'LinkedIn',
-                style: GoogleFonts.raleway(
-                  textStyle: TextStyle(
-                    color: themeManager.themeData.primaryColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              onTap: () {
-                _launchURL("Linkedin");
-              },
-            ),
-            ListTile(
-              leading: FaIcon(
-                FontAwesomeIcons.github,
-                color: themeManager.themeData.primaryColor,
-              ),
-              title: Text(
-                'GitHub',
-                style: GoogleFonts.raleway(
-                  textStyle: TextStyle(
-                    color: themeManager.themeData.primaryColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              onTap: () {
-                _launchURL("Github");
-              },
-            ),
-          ],
+          ),
         ),
+        backgroundColor: themeManager.themeData.hintColor,
+        iconTheme: IconThemeData(
+          color: themeManager.themeData.primaryColor,
+          size: relativeWidth(7),
+        ),
+        centerTitle: true,
+      ),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 60.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: CircleAvatar(
+                      backgroundColor: Colors.black,
+                      radius: relativeWidth(20),
+                      backgroundImage: AssetImage('assets/logo.png'),
+                    ),
+                  ),
+                  SizedBox(
+                    height: relativeHeight(3),
+                  ),
+                  Center(
+                    child: Text(
+                      'Get in Touch!',
+                      style: GoogleFonts.raleway(
+                        textStyle: TextStyle(
+                          color: themeManager.themeData.hintColor,
+                          fontSize: relativeWidth(5),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: relativeHeight(3),
+                  ),
+                  Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(relativeWidth(3)),
+                    ),
+                    elevation: 6,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            themeManager.themeData.primaryColor
+                                .withOpacity(0.9),
+                            themeManager.themeData.primaryColor
+                                .withOpacity(0.6),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(
+                          relativeWidth(3),
+                        ),
+                      ),
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.email,
+                          color: themeManager.themeData.hintColor,
+                        ),
+                        title: Text(
+                          'Email Us',
+                          style: GoogleFonts.raleway(
+                            textStyle: TextStyle(
+                              color: themeManager.themeData.hintColor,
+                              fontSize: relativeWidth(5),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Emailscreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: relativeHeight(2),
+                  ),
+                  Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        relativeWidth(3),
+                      ),
+                    ),
+                    elevation: 6,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            themeManager.themeData.primaryColor
+                                .withOpacity(0.9),
+                            themeManager.themeData.primaryColor
+                                .withOpacity(0.6),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(
+                          relativeWidth(3),
+                        ),
+                      ),
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.account_box,
+                          color: themeManager.themeData.hintColor,
+                        ),
+                        title: Text(
+                          'Portfolio',
+                          style: GoogleFonts.raleway(
+                            textStyle: TextStyle(
+                              color: themeManager.themeData.hintColor,
+                              fontSize: relativeWidth(5),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          _launchURL("Portfolio");
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: relativeHeight(2),
+                  ),
+                  Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        relativeWidth(3),
+                      ),
+                    ),
+                    elevation: 6,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            themeManager.themeData.primaryColor
+                                .withOpacity(0.9),
+                            themeManager.themeData.primaryColor
+                                .withOpacity(0.6),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(
+                          relativeHeight(1),
+                        ),
+                      ),
+                      child: ListTile(
+                        leading: FaIcon(
+                          FontAwesomeIcons.linkedin,
+                          color: themeManager.themeData.hintColor,
+                        ),
+                        title: Text(
+                          'LinkedIn',
+                          style: GoogleFonts.raleway(
+                            textStyle: TextStyle(
+                              color: themeManager.themeData.hintColor,
+                              fontSize: relativeWidth(5),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          _launchURL("Linkedin");
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: relativeHeight(2),
+                  ),
+                  Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        relativeWidth(3),
+                      ),
+                    ),
+                    elevation: 6,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            themeManager.themeData.primaryColor
+                                .withOpacity(0.9),
+                            themeManager.themeData.primaryColor
+                                .withOpacity(0.6),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(
+                          relativeWidth(3),
+                        ),
+                      ),
+                      child: ListTile(
+                        leading: FaIcon(
+                          FontAwesomeIcons.github,
+                          color: themeManager.themeData.hintColor,
+                        ),
+                        title: Text(
+                          'GitHub',
+                          style: GoogleFonts.raleway(
+                            textStyle: TextStyle(
+                              color: themeManager.themeData.hintColor,
+                              fontSize: relativeWidth(5),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          _launchURL("Github");
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

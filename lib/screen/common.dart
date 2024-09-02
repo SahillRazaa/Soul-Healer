@@ -65,8 +65,8 @@ class _CommonPageState extends State<CommonPage> {
               color: themeManager.themeData.primaryColor,
             ),
           ),
-          const SizedBox(
-            height: 20,
+          SizedBox(
+            height: relativeHeight(2),
           ),
           SafeArea(
             child: Column(

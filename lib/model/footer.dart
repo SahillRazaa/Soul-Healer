@@ -40,20 +40,20 @@ class _FooterState extends State<Footer> {
       switch (page) {
         case '/home':
           return selectedPage == page
-              ? const Color(0xFF4CAF50)
-              : themeManager.themeData.primaryColor;
+              ? themeManager.themeData.primaryColor
+              : Colors.black;
         case '/search':
           return selectedPage == page
-              ? const Color(0xFFFFA726)
-              : themeManager.themeData.primaryColor;
+              ? themeManager.themeData.primaryColor
+              : Colors.black;
         case '/favourite':
           return selectedPage == page
-              ? const Color(0xFFE91E63)
-              : themeManager.themeData.primaryColor;
+              ? themeManager.themeData.primaryColor
+              : Colors.black;
         case '/settings':
           return selectedPage == page
-              ? const Color(0xFF607D8B)
-              : themeManager.themeData.primaryColor;
+              ? themeManager.themeData.primaryColor
+              : Colors.black;
         default:
           return Colors.black;
       }
@@ -63,20 +63,20 @@ class _FooterState extends State<Footer> {
       switch (page) {
         case '/home':
           return selectedPage == page
-              ? const Color(0xFF4CAF50)
-              : themeManager.themeData.primaryColor;
+              ? themeManager.themeData.primaryColor
+              : Colors.black;
         case '/search':
           return selectedPage == page
-              ? const Color(0xFFFFA726)
-              : themeManager.themeData.primaryColor;
+              ? themeManager.themeData.primaryColor
+              : Colors.black;
         case '/favourite':
           return selectedPage == page
-              ? const Color(0xFFE91E63)
-              : themeManager.themeData.primaryColor;
+              ? themeManager.themeData.primaryColor
+              : Colors.black;
         case '/settings':
           return selectedPage == page
-              ? const Color(0xFF607D8B)
-              : themeManager.themeData.primaryColor;
+              ? themeManager.themeData.primaryColor
+              : Colors.black;
         default:
           return Colors.black;
       }

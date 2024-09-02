@@ -51,7 +51,7 @@ class _ArtistsongsState extends State<Artistsongs> {
 
       if (videosResponse.statusCode == 200) {
         final videosData = json.decode(videosResponse.body);
-        List<dynamic> videos = videosData['items'];
+        List<dynamic> videos = videosData['items']..shuffle();
 
         return videos;
       } else {
@@ -265,7 +265,7 @@ class _ArtistsongsState extends State<Artistsongs> {
                             }
 
                             int newLength =
-                                (relativeWidth(55, context) / 8).floor();
+                                (relativeWidth(25, context) / 8).floor();
 
                             if (songName.length > newLength) {
                               songName =
