@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -70,9 +69,7 @@ class _PlayerPageState extends State<PlayerPage> {
     setState(() {
       isAudioLoading = true;
     });
-
     String? audioUrl = await getAudioUrl(videoId);
-
     if (audioUrl != null) {
       if (audioProvider.isPlaying) {
         await audioProvider.stop();
@@ -194,31 +191,26 @@ class _PlayerPageState extends State<PlayerPage> {
               SizedBox(
                 height: relativeHeight(2),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    iconSize: relativeWidth(5),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    icon: const Icon(Icons.keyboard_arrow_down_rounded),
+              IconButton(
+                iconSize: relativeWidth(10),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: const Icon(Icons.cancel_sharp),
+                color: Colors.black,
+              ),
+              SizedBox(
+                height: relativeHeight(2),
+              ),
+              Text(
+                'Currently Playing',
+                style: GoogleFonts.roboto(
+                  textStyle: TextStyle(
+                    fontSize: relativeWidth(6),
+                    fontWeight: FontWeight.w900,
                     color: Colors.black,
                   ),
-                  Text(
-                    'Currently Playing',
-                    style: GoogleFonts.roboto(
-                      textStyle: TextStyle(
-                        fontSize: relativeWidth(3),
-                        fontWeight: FontWeight.w900,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 0,
-                  ),
-                ],
+                ),
               ),
               SizedBox(
                 height: relativeHeight(1),
@@ -228,14 +220,14 @@ class _PlayerPageState extends State<PlayerPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: relativeWidth(40),
-                      height: relativeWidth(40),
+                      width: relativeWidth(60),
+                      height: relativeWidth(60),
                       decoration: BoxDecoration(
                         boxShadow: [
                           BoxShadow(
                             color: themeManager.themeData.primaryColor,
-                            spreadRadius: 5,
-                            blurRadius: 20,
+                            spreadRadius: 10,
+                            blurRadius: 25,
                           ),
                         ],
                         shape: BoxShape.circle,
@@ -247,8 +239,8 @@ class _PlayerPageState extends State<PlayerPage> {
                       child: ClipOval(
                         child: Image.network(
                           songImage,
-                          width: relativeWidth(45),
-                          height: relativeWidth(45),
+                          width: relativeWidth(65),
+                          height: relativeWidth(65),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -281,7 +273,7 @@ class _PlayerPageState extends State<PlayerPage> {
                         songname,
                         style: GoogleFonts.roboto(
                           textStyle: TextStyle(
-                            fontSize: relativeWidth(3),
+                            fontSize: relativeWidth(5),
                             fontWeight: FontWeight.w900,
                             color: Colors.black,
                           ),
@@ -291,7 +283,7 @@ class _PlayerPageState extends State<PlayerPage> {
                       songArtist,
                       style: GoogleFonts.roboto(
                         textStyle: TextStyle(
-                          fontSize: relativeWidth(2.5),
+                          fontSize: relativeWidth(4),
                           fontWeight: FontWeight.w600,
                           color: Colors.black.withOpacity(0.8),
                         ),
@@ -325,7 +317,7 @@ class _PlayerPageState extends State<PlayerPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         IconButton(
-                          iconSize: relativeWidth(7),
+                          iconSize: relativeWidth(10),
                           onPressed: () {
                             if (!currentSong.hasPreviousSong()) {
                               showPopupMessage('No previous song available');
@@ -343,7 +335,7 @@ class _PlayerPageState extends State<PlayerPage> {
                           builder: (context, snapshot) {
                             bool isPlaying = snapshot.data?.playing ?? false;
                             return IconButton(
-                              iconSize: relativeWidth(9),
+                              iconSize: relativeWidth(15),
                               onPressed: () {
                                 setState(() {
                                   audioProvider.playPause();
@@ -357,7 +349,7 @@ class _PlayerPageState extends State<PlayerPage> {
                           },
                         ),
                         IconButton(
-                          iconSize: relativeWidth(7),
+                          iconSize: relativeWidth(10),
                           onPressed: () {
                             if (!currentSong.hasNextSong()) {
                               showPopupMessage('No next song available');
@@ -379,7 +371,7 @@ class _PlayerPageState extends State<PlayerPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         IconButton(
-                          iconSize: relativeWidth(5),
+                          iconSize: relativeWidth(8),
                           onPressed: () {
                             if (_isSongInFavorites(songData)) {
                               _showAlreadyInFavoritesDialog(context);
@@ -391,7 +383,7 @@ class _PlayerPageState extends State<PlayerPage> {
                           color: Colors.black,
                         ),
                         IconButton(
-                          iconSize: relativeWidth(4),
+                          iconSize: relativeWidth(8),
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
