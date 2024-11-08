@@ -6,7 +6,7 @@ import 'package:soul_healer/providers/audio_player_provider.dart';
 import 'package:soul_healer/providers/current_song.dart';
 import 'package:soul_healer/providers/fav_song_provider.dart';
 import 'package:soul_healer/providers/recent_played_provider.dart';
-import 'package:soul_healer/providers/search_provider.dart'; 
+import 'package:soul_healer/providers/search_provider.dart';
 import 'package:soul_healer/providers/theme_manager.dart';
 import 'package:soul_healer/screen/fav.dart';
 import 'package:soul_healer/screen/home.dart';
